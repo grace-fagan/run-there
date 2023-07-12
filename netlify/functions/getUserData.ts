@@ -37,7 +37,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
   } catch (error) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: `Could not authorize user: ${error}` }),
+      body: JSON.stringify({ message: `Could not fetch user data: ${error}` }),
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
