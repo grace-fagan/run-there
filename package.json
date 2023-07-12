@@ -8,17 +8,20 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "format": "prettier --write --plugin-search-dir=. ./**/*.html"
+    "format": "prettier --write --plugin-search-dir=. ./**/*.html",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.1",
     "@tsconfig/svelte": "^4.0.1",
     "@types/node": "^20.4.1",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
     "autoprefixer": "^10.4.14",
     "dotenv": "^16.3.1",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-svelte3": "^4.0.0",
+    "eslint-plugin-svelte": "^2.32.2",
+    "husky": "^8.0.3",
     "postcss": "^8.4.25",
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.10.1",
@@ -29,5 +32,18 @@
     "tslib": "^2.5.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "@netlify/functions": "^1.6.0",
+    "axios": "^1.4.0",
+    "lint-staged": "^13.2.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,svelte}": [
+      "eslint --cache --fix"
+    ],
+    "*.{js,ts,tsx,css,scss,md,svelte}": [
+      "prettier --write"
+    ]
   }
 }
