@@ -9,18 +9,28 @@ export enum GrantType {
   REFRESH = 'refresh_token'
 }
 
+const getUserAccessFromGrantType = async (token: string, grantType: string) => {
+  let tokenString = '';
+  if (grantType === GrantType.REFRESH) tokenString = `refresh_token=${token}`;
+  else if (grantType === GrantType.AUTH_CODE) tokenString = `code=${token}`;
+  const response = await axios.post(
+    `https://www.strava.com/api/v3/oauth/token?client_id=${clientID}&client_secret=${clientSecret}&grant_type=${grantType}&${tokenString}`
+  );
+  return response;
+};
+
 const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
-  const queryParams = event.queryStringParameters || null;
+  const queryParams = event.queryStringParameters;
 
   try {
     if (!queryParams) throw new Error('missing parameters');
     const token = queryParams.token;
     const grantType = queryParams.grant_type;
+    // optional parameter passed if athlete id already exists
     const athleteId = queryParams.id;
     if (!token || !grantType) throw new Error('missing parameters');
 
     const validGrantType = Object.values(GrantType).includes(grantType as GrantType);
-    console.log({ grantType });
     if (!validGrantType) throw new Error('invalid grant type');
 
     // get refresh token and access token using the authorization code or refresh token
@@ -48,16 +58,6 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
       }
     };
   }
-};
-
-const getUserAccessFromGrantType = async (token: string, grantType: string) => {
-  let tokenString = '';
-  if (grantType === GrantType.REFRESH) tokenString = `refresh_token=${token}`;
-  else if (grantType === GrantType.AUTH_CODE) tokenString = `code=${token}`;
-  const response = await axios.post(
-    `https://www.strava.com/api/v3/oauth/token?client_id=${clientID}&client_secret=${clientSecret}&grant_type=${grantType}&${tokenString}`
-  );
-  return response;
 };
 
 export { handler };
