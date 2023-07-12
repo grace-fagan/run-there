@@ -4,6 +4,13 @@ const redirectURL = `${window.location}redirect`;
 export const scope = 'read,activity:read_all,profile:read_all';
 export const authURL = `http://www.strava.com/oauth/authorize?client_id=${clientID}&response_type=code&redirect_uri=${redirectURL}/exchange_token&approval_prompt=force&scope=${scope}`;
 
+export interface UserAuth {
+  id: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+
 export const getServerUrl = (env: ImportMetaEnv): string => {
   if (!env.MODE || !env.VITE_DEV_SERVER || !env.VITE_PROD_SERVER)
     throw new Error(`env missing properties for server url`);
