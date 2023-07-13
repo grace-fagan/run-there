@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { authURL, getLocalAuth, scope } from '$lib/auth-utils';
+  import { authURL, getLocalActivities, getLocalAuth, scope } from '$lib/auth-utils';
   import type { UserAuth } from '$types/client';
   import { getUserAuth, getUserActivities } from '$lib/api';
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
-  import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
-  import { cleanActivities, promiseWhile } from '$lib/api-utils';
+  import type { StravaSummaryActivity } from '$types/stravaAPI';
+  import { promiseWhile } from '$lib/api-utils';
   import { activities } from '$lib/store';
+  import { cleanActivities } from '$lib/activity-utiils';
 
   const queryParams = new URLSearchParams(window.location.search);
   const authedScope = queryParams.get('scope');
@@ -80,8 +81,8 @@
       }
 
       // fetch activity data
-      const activities = localStorage.getItem(`activities-${athleteId}`);
-      if (accessToken && !activities) {
+      const localActivities = getLocalActivities(athleteId);
+      if (accessToken && !localActivities) {
         try {
           fetchingActivities = true;
           const newActivities = await fetchAllActivities(accessToken);
@@ -95,7 +96,12 @@
         }
       } else if (accessToken) {
         console.log('activities already found!');
+        $activities = localActivities;
       }
+
+      // navigate to cities page
+      console.log({ $activities });
+      navigate('/nyc');
     }
   });
 </script>
