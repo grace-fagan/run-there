@@ -1,4 +1,4 @@
-import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
+import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
 
 const getUserDataByPage = async (accessToken: string, page: number) => {
@@ -9,7 +9,7 @@ const getUserDataByPage = async (accessToken: string, page: number) => {
   return response;
 };
 
-const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+const handler: Handler = async (event: HandlerEvent) => {
   const queryParams = event.queryStringParameters;
 
   try {
@@ -37,7 +37,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
   } catch (error) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: `Could not fetch user data: ${error}` }),
+      body: JSON.stringify({ message: `Could not fetch activity data: ${error}` }),
       headers: {
         'Access-Control-Allow-Origin': '*'
       }

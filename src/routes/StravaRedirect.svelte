@@ -1,8 +1,12 @@
 <script lang="ts">
-  import { authURL, promiseWhile, scope, type UserAuth } from '$lib/server-utils';
+  import { authURL, getLocalAuth, scope } from '$lib/auth-utils';
+  import type { UserAuth } from '$types/client';
   import { getUserAuth, getUserActivities } from '$lib/api';
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
+  import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
+  import { cleanActivities, promiseWhile } from '$lib/api-utils';
+  import { activities } from '$lib/store';
 
   const queryParams = new URLSearchParams(window.location.search);
   const authedScope = queryParams.get('scope');
@@ -13,38 +17,38 @@
 
   let error = '';
   let fetchingActivities = false;
+  let totalFetchedActivites: StravaSummaryActivity[] = [];
 
   const fetchAllActivities = async (accessToken: string) => {
-    let startPage = 1;
-    let currActivities: string[] = [];
-    let totalActivities: string[] = [];
+    let page = 1;
+    let currActivities: StravaSummaryActivity[] = [];
 
-    const nullPage = () => currActivities.length === 0 && startPage > 1;
+    const isNullPage = () => currActivities.length === 0 && page > 1;
 
-    const getTwoPages = async () => {
-      console.log('getting page: ', startPage);
-      let data = await getUserActivities(accessToken, startPage);
-      currActivities = data.userActivities;
-      totalActivities = totalActivities.concat(currActivities);
-      startPage++;
+    const getPage = async () => {
+      console.log('getting page: ', page);
+      currActivities = await getUserActivities(accessToken, page);
+      console.log({ currActivities });
+      totalFetchedActivites = totalFetchedActivites.concat(currActivities);
+      page++;
     };
 
-    return promiseWhile(nullPage, getTwoPages).then(() => {
-      console.log('finished fetching data!', { totalActivities });
-      return totalActivities;
+    // can only retrieve one page at a time due to Netlify's 10 second max runtime for serverless functions
+    return promiseWhile(isNullPage, getPage).then(() => {
+      console.log('finished fetching data!', { totalFetchedActivites });
+      const cleanedActivities = cleanActivities(totalFetchedActivites);
+      $activities = cleanedActivities;
+      return cleanedActivities;
     });
-  };
-
-  const getLocalAuth = (): UserAuth => {
-    const authString = localStorage.getItem('userAuth');
-    return JSON.parse(authString);
   };
 
   // authenticate user
   onMount(async () => {
     // if single use auth code has already been used, redirect to home page
-    if (stravaAuthCode === localStorage.getItem('singleUseCode')) navigate('/');
-    else localStorage.setItem('singleUseCode', stravaAuthCode);
+    if (stravaAuthCode === localStorage.getItem('singleUseCode')) {
+      navigate('/');
+      return;
+    } else localStorage.setItem('singleUseCode', stravaAuthCode);
 
     const validScope = authedScope === scope;
     const localAuth = getLocalAuth();
@@ -57,7 +61,7 @@
       try {
         if (!localAuth) {
           newAuth = await getUserAuth(stravaAuthCode, 'authorization_code');
-          // if user exists but access token has expired
+          // if user exists but access token has expired (convert seconds to milliseconds)
         } else if (localAuth.expiresAt * 1000 < now) {
           console.log('access code expired! Getting a new one...');
           newAuth = await getUserAuth(localAuth.refreshToken, 'refresh_token');
@@ -81,18 +85,22 @@
         try {
           fetchingActivities = true;
           const newActivities = await fetchAllActivities(accessToken);
+          if (!newActivities) throw new Error('No activity data found.');
           localStorage.setItem(`activities-${athleteId}`, JSON.stringify(newActivities));
-          fetchingActivities = false;
         } catch (error) {
           //TO-DO: error handling
           console.error(error);
+        } finally {
+          fetchingActivities = false;
         }
+      } else if (accessToken) {
+        console.log('activities already found!');
       }
     }
   });
 </script>
 
-<main>
+<main class="flex flex-col gap-2 items-center">
   <h1>Redirect page</h1>
   {#if error}
     <p>{error}</p>
@@ -102,6 +110,6 @@
     >
   {/if}
   {#if fetchingActivities}
-    <p>Fetching activities...</p>
+    <p>Fetching activities... there are {totalFetchedActivites.length}</p>
   {/if}
 </main>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { authURL } from '$lib/server-utils';
+  import { authURL } from '$lib/auth-utils';
 
   const handleLogin = () => {
     window.location.replace(authURL);

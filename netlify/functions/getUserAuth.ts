@@ -1,4 +1,4 @@
-import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
+import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
 
 const clientID = process.env.VITE_CLIENT_ID;
@@ -19,7 +19,7 @@ const getUserAccessFromGrantType = async (token: string, grantType: string) => {
   return response;
 };
 
-const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+const handler: Handler = async (event: HandlerEvent) => {
   const queryParams = event.queryStringParameters;
 
   try {

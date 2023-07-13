@@ -1,4 +1,4 @@
-import { getServerUrl } from './server-utils';
+import { getServerUrl } from './api-utils';
 
 const baseURL = getServerUrl(import.meta.env);
 
