@@ -10,7 +10,8 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "$lib/*": ["src/lib/*"]
+      "$lib/*": ["src/lib/*"],
+      "$types/*": ["src/types/*"]
     },
     "types": ["svelte", "svelte-routing"]
   },
