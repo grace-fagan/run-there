@@ -36,9 +36,12 @@
   "dependencies": {
     "@mapbox/polyline": "^1.2.0",
     "@netlify/functions": "^1.6.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/union": "^6.5.0",
     "@types/geojson": "^7946.0.10",
     "axios": "^1.4.0",
-    "lint-staged": "^13.2.3"
+    "lint-staged": "^13.2.3",
+    "mapbox-gl": "^2.15.0"
   },
   "lint-staged": {
     "*.{ts,tsx,svelte}": [

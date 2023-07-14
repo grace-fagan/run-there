@@ -1,9 +1,11 @@
 <script lang="ts">
   import { filterByCity } from '$lib/activity-utiils';
   import { getLocalActivities } from '$lib/auth-utils';
-  import { NYC_BOUNDS, getPolyline } from '$lib/map-utils';
+  import { getPolyline } from '$lib/map-utils';
+  import { NYC_BOUNDS } from '$lib/nyc-constants';
   import { activities } from '$lib/store';
   import type { Activity, Route, UserAuth } from '$types/client';
+  import BaseMap from '$components/BaseMap.svelte';
   import { onMount } from 'svelte';
 
   let error = '';
@@ -49,14 +51,10 @@
   });
 </script>
 
-<main class="flex flex-col gap-2">
+<main class="h-screen p-4 flex flex-col gap-2">
   <p>NYC Activities</p>
   {#if error}
     <p>{error}</p>
   {/if}
-  {#if $activities}
-    {#each filteredActivities as activity}
-      <p>{activity.name}</p>
-    {/each}
-  {/if}
+  <BaseMap />
 </main>
