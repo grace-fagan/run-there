@@ -1,0 +1,154 @@
+import mapboxgl, { Map as MapboxMap } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import type { Feature, FeatureCollection, LineString } from 'geojson';
+import type { LatLng, Route } from '$types/client';
+import polyline from '@mapbox/polyline';
+
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+
+export const ROUTES_SRC = 'routes';
+export const NEIGHBORHOODS_SRC = 'neighborhoods';
+
+export const getPolyline = (summary: string): LineString => polyline.toGeoJSON(summary);
+
+export const createMap = (center: LatLng): MapboxMap => {
+  return new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/gracefagan/cl41z1iv1001h15p8tzq6m7fy',
+    center: [center.lng, center.lat],
+    zoom: 9.5
+  });
+};
+
+export const addNeighborhoodsToMap = (
+  map: MapboxMap,
+  features: FeatureCollection,
+  maxValue: number
+) => {
+  map.addSource(NEIGHBORHOODS_SRC, {
+    type: 'geojson',
+    data: features
+  });
+
+  const layerName = NEIGHBORHOODS_SRC + '-fill';
+
+  map.addLayer({
+    id: layerName,
+    type: 'fill',
+    source: NEIGHBORHOODS_SRC,
+    paint: {
+      'fill-color': ['get', 'color'],
+      'fill-opacity': [
+        'case',
+        ['==', maxValue, 0],
+        0.2,
+        ['==', ['get', 'value'], 0],
+        0,
+        ['>', ['get', 'value'], 0],
+        [
+          'interpolate',
+          ['exponential', 0.97],
+          ['get', 'value'],
+          1,
+          0.2,
+          maxValue <= 1 ? 1.1 : maxValue,
+          0.9
+        ],
+        0.2
+      ]
+    }
+  });
+  return layerName;
+};
+
+export const addRoutesToMap = (map: MapboxMap, routes: Route[]) => {
+  let routeFeatures = [];
+  routes.forEach((route) => {
+    routeFeatures = routeFeatures.concat({
+      type: 'Feature',
+      id: route.id,
+      geometry: route.lineString
+    });
+  });
+
+  map.addSource(ROUTES_SRC, {
+    type: 'geojson',
+    data: {
+      type: 'FeatureCollection',
+      features: routeFeatures
+    }
+  });
+
+  map.addLayer({
+    id: 'routes-line',
+    type: 'line',
+    source: ROUTES_SRC,
+    minzoom: 8,
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round'
+    },
+    paint: {
+      'line-color': ['case', ['boolean', ['feature-state', 'hover'], false], '#E04051', '#5D5991'],
+      'line-width': 1,
+      'line-opacity': ['case', ['boolean', ['feature-state', 'visible'], false], 1, 0]
+    }
+  });
+};
+
+export const toggleRoutes = (map: MapboxMap, routes: Route[], visible: boolean = true) => {
+  if (!visible) {
+    routes.forEach(({ id }) => map.removeFeatureState({ source: ROUTES_SRC, id: id }));
+  } else {
+    routes.forEach(({ id }) =>
+      map.setFeatureState({ source: ROUTES_SRC, id: id }, { visible: true })
+    );
+  }
+};
+
+export const addSelectedLayerToMap = (map: MapboxMap, source: string) => {
+  map.addLayer({
+    id: source + '-selected',
+    type: 'fill',
+    source,
+    layout: {
+      visibility: 'none'
+    },
+    paint: {
+      'fill-color': 'lightgrey',
+      'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0, 0.3]
+    }
+  });
+};
+
+export const addOutlinesToMap = (map: MapboxMap, source: string) => {
+  map.addLayer({
+    id: source + '-outline',
+    type: 'line',
+    source,
+    paint: {
+      'line-color': 'black',
+      'line-width': 3,
+      'line-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0]
+    }
+  });
+};
+
+export const hoverFeature = (map: MapboxMap, n: Feature) => {
+  if (!n) return;
+  const routesToShow = JSON.parse(n.properties.runs) as number[];
+  routesToShow.forEach((route) => {
+    map.setFeatureState({ source: ROUTES_SRC, id: route }, { visible: true });
+  });
+  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id || null }, { hover: true });
+};
+
+export const unhoverFeature = (map: MapboxMap, n: Feature) => {
+  if (!n) return;
+  const routesToHide = JSON.parse(n.properties.runs) as number[];
+  routesToHide.forEach((route) => {
+    map.removeFeatureState({ source: ROUTES_SRC, id: route });
+  });
+  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id || null }, { hover: false });
+};

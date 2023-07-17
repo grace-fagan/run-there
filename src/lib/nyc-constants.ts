@@ -14,11 +14,11 @@ export const NYC_CENTER: LatLng = {
 };
 
 const boroughMap = new Map<number, Borough>([
-  [1, { name: 'Manhattan', color: 'blue' }],
-  [2, { name: 'Bronx', color: 'orange' }],
-  [3, { name: 'Brooklyn', color: 'yellow' }],
-  [4, { name: 'Queens', color: 'red' }],
-  [5, { name: 'Staten Island', color: 'green' }]
+  [1, { name: 'Manhattan', color: '#76B5C3' }],
+  [2, { name: 'Bronx', color: '#E6A156' }],
+  [3, { name: 'Brooklyn', color: '#E6BC42' }],
+  [4, { name: 'Queens', color: '#E04051' }],
+  [5, { name: 'Staten Island', color: '#63BC83' }]
 ]);
 
 export const CodeToBorough = (code: number) => boroughMap.get(code);

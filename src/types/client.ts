@@ -13,6 +13,7 @@ export interface LatLng {
   lng: number;
 }
 
+//To-DO: move summaryPolyline to Route object
 export interface Activity {
   id: string;
   name: string;
