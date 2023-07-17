@@ -1,20 +1,3 @@
-import type { ClientActivity } from '$types/client';
-import type { StravaSummaryActivity } from '$types/stravaAPI';
-
-export const cleanActivities = (stravaActivities: StravaSummaryActivity[]): ClientActivity[] => {
-  return stravaActivities.map((a) => {
-    return {
-      id: a.id as number,
-      name: a.name as string,
-      distance: a.distance as number,
-      summaryPolyline: a.map.summary_polyline as string,
-      sport: a.type,
-      startDate: a.start_date,
-      startLatLng: a.start_latlng
-    };
-  });
-};
-
 export const getServerUrl = (env: ImportMetaEnv): string => {
   if (!env.MODE || !env.VITE_DEV_SERVER || !env.VITE_PROD_SERVER)
     throw new Error(`env missing properties for server url`);
@@ -30,6 +13,5 @@ export const promiseWhile = async (condition: () => boolean, action: () => Promi
     if (condition()) return;
     return Promise.resolve(action()).then(loop);
   }
-  // const result = await Promise.resolve();
   return loop();
 };

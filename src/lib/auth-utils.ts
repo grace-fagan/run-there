@@ -10,3 +10,8 @@ export const getLocalAuth = (): UserAuth => {
   const authString = localStorage.getItem('userAuth');
   return JSON.parse(authString);
 };
+
+export const getLocalActivities = (id: string) => {
+  const activitiesString = localStorage.getItem(`activities-${id}`);
+  return JSON.parse(activitiesString);
+};
