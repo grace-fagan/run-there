@@ -112,7 +112,7 @@ export const createFeatureIdMap = (data: FeatureCollection) => {
 };
 
 // takes a map gets the maximum length of all its values
-export const getMaxValLength = (map: Map<number, []>) => {
+export const getMaxValLength = (map: Map<number, string[]>) => {
   let maxLength = 0;
   for (const arr of map.values()) maxLength = Math.max(maxLength, arr.length);
   return maxLength;
