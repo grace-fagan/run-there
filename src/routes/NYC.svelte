@@ -1,6 +1,6 @@
 <script lang="ts">
   import { filterByCity } from '$lib/activity-utiils';
-  import { getLocalActivities } from '$lib/auth-utils';
+  import { authURL, getLocalActivities } from '$lib/auth-utils';
   import { getPolyline } from '$lib/mapbox-utils';
   import { NYC_BOUNDS } from '$lib/nyc-constants';
   import { activities } from '$lib/store';
@@ -9,6 +9,7 @@
   import { getMaxValLength, mapNeighborhoodToRoutes, populateData } from '$lib/neighborhoods-utils';
   import type { FeatureCollection } from 'geojson';
   import NYCData from '$data/NYC.json';
+  import Icon from '$components/global/Icon.svelte';
 
   let error = '';
   let filteredActivities = $activities;
@@ -59,6 +60,7 @@
   <p>NYC Activities</p>
   {#if error}
     <p>{error}</p>
+    <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
   <BaseMap {routes} {neighborhoodsData} {maxNumRoutes} />
 </main>
