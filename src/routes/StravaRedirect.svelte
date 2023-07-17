@@ -107,7 +107,6 @@
 </script>
 
 <main class="flex flex-col gap-2 items-center">
-  <h1>Redirect page</h1>
   {#if error}
     <p>{error}</p>
     <button
@@ -116,6 +115,7 @@
     >
   {/if}
   {#if fetchingActivities}
-    <p>Fetching activities... there are {totalFetchedActivites.length}</p>
+    <p>Fetching activities...</p>
+    <p>there are {totalFetchedActivites.length}</p>
   {/if}
 </main>
