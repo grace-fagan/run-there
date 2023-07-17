@@ -4,7 +4,9 @@ import union from '@turf/union';
 import { CodeToBorough } from './nyc-constants';
 import point from 'turf-point';
 import booleanIntersects from '@turf/boolean-intersects';
+import center from '@turf/center';
 import type { Route } from '$types/client';
+import type { NeighborhoodProperties } from '$types/neighborhoods/nyc';
 
 // this function cleans and adds route data to each feature in the collection
 export const populateData = (
@@ -43,7 +45,7 @@ export const populateData = (
           neighbors: feature.properties.neighbors,
           runs: routesMap.get(id),
           value: routesMap.get(id).length
-        },
+        } as NeighborhoodProperties,
         geometry: featurePolygon
       };
     })
@@ -117,3 +119,5 @@ export const getMaxValLength = (map: Map<number, string[]>) => {
   for (const arr of map.values()) maxLength = Math.max(maxLength, arr.length);
   return maxLength;
 };
+
+export const getFeatureCenter = (polygon: Polygon) => center(polygon).geometry.coordinates;

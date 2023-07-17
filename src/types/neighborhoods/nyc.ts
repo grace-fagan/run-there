@@ -3,9 +3,12 @@ export interface Borough {
   color: string;
 }
 
-export interface NYCNeighborhood {
+export interface NeighborhoodProperties {
   id: number;
   name: string;
-  borough: Borough;
+  borough: number;
+  color: string;
   neighbors: number[];
+  runs: string[];
+  value: number;
 }

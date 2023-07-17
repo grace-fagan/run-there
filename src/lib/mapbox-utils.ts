@@ -1,8 +1,9 @@
 import mapboxgl, { Map as MapboxMap } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import type { Feature, FeatureCollection, LineString } from 'geojson';
+import type { Feature, FeatureCollection, LineString, Polygon } from 'geojson';
 import type { LatLng, Route } from '$types/client';
 import polyline from '@mapbox/polyline';
+import { getFeatureCenter } from './neighborhoods-utils';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -141,14 +142,23 @@ export const hoverFeature = (map: MapboxMap, n: Feature) => {
   routesToShow.forEach((route) => {
     map.setFeatureState({ source: ROUTES_SRC, id: route }, { visible: true });
   });
-  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id || null }, { hover: true });
+  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: true });
 };
 
 export const unhoverFeature = (map: MapboxMap, n: Feature) => {
+  console.log('unhovering...', n);
   if (!n) return;
   const routesToHide = JSON.parse(n.properties.runs) as number[];
   routesToHide.forEach((route) => {
     map.removeFeatureState({ source: ROUTES_SRC, id: route });
   });
-  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id || null }, { hover: false });
+  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: false });
+};
+
+export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: LatLng) => {
+  map.setLayoutProperty('neighborhoods-selected', 'visibility', n ? 'visible' : 'none');
+  map.flyTo({
+    center: n ? getFeatureCenter(n.geometry as Polygon) : [center.lng, center.lat],
+    zoom: n ? 13 : 9.5
+  });
 };

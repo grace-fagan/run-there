@@ -7,13 +7,16 @@
   import type { Activity, Route, UserAuth } from '$types/client';
   import BaseMap from '$components/BaseMap.svelte';
   import { getMaxValLength, mapNeighborhoodToRoutes, populateData } from '$lib/neighborhoods-utils';
-  import type { FeatureCollection } from 'geojson';
+  import type { Feature, FeatureCollection } from 'geojson';
   import NYCData from '$data/NYC.json';
   import Icon from '$components/global/Icon.svelte';
+  import Panel from '$components/Panel.svelte';
+  import NeighborhoodTag from '$components/NeighborhoodTag.svelte';
 
   let error = '';
   let filteredActivities = $activities;
   let routes: Route[] = [];
+  let visibleNeighborhood: Feature = null;
 
   const loadActivities = () => {
     if (!$activities) {
@@ -62,5 +65,15 @@
     <p>{error}</p>
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
-  <BaseMap {routes} {neighborhoodsData} {maxNumRoutes} />
+  <div class="flex h-screen">
+    <BaseMap {routes} {neighborhoodsData} {maxNumRoutes} bind:visibleFeat={visibleNeighborhood}>
+      {#if visibleNeighborhood}
+        <NeighborhoodTag
+          name={visibleNeighborhood.properties.name}
+          value={visibleNeighborhood.properties.value}
+        />
+      {/if}
+    </BaseMap>
+    <Panel />
+  </div>
 </main>
