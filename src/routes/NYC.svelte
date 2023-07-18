@@ -2,21 +2,25 @@
   import { filterByCity } from '$lib/activity-utiils';
   import { authURL, getLocalActivities } from '$lib/auth-utils';
   import { getPolyline } from '$lib/mapbox-utils';
-  import { NYC_BOUNDS } from '$lib/nyc-constants';
+  import { NYC_BOUNDS, featureToNeighborhood } from '$lib/nyc-constants';
   import { activities } from '$lib/store';
   import type { Activity, Route, UserAuth } from '$types/client';
+  import type { Neighborhood } from '$types/neighborhoods/nyc';
   import BaseMap from '$components/BaseMap.svelte';
-  import { getMaxValLength, mapNeighborhoodToRoutes, populateData } from '$lib/neighborhoods-utils';
+  import { getMaxValLength, mapNeighborhoodToRoutes, loadMapData } from '$lib/neighborhoods-utils';
   import type { Feature, FeatureCollection } from 'geojson';
   import NYCData from '$data/NYC.json';
   import Icon from '$components/global/Icon.svelte';
   import Panel from '$components/Panel.svelte';
-  import NeighborhoodTag from '$components/NeighborhoodTag.svelte';
+  import SummaryStats from '$components/SummaryStats.svelte';
 
   let error = '';
-  let filteredActivities = $activities;
+  let filteredActivities: Activity[] = $activities;
   let routes: Route[] = [];
-  let visibleNeighborhood: Feature = null;
+  let selectedFeat: Feature = null;
+  let selectedNeighborhood: Neighborhood = null;
+
+  $: selectedNeighborhood = selectedFeat ? featureToNeighborhood(selectedFeat) : null;
 
   const loadActivities = () => {
     if (!$activities) {
@@ -49,31 +53,28 @@
   };
 
   $: featToRoutes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, routes);
-  $: neighborhoodsData = populateData(NYCData as FeatureCollection, featToRoutes);
+  $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
   $: maxNumRoutes = getMaxValLength(featToRoutes);
+  $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
 
   loadActivities();
-  if ($activities) {
+  $: if ($activities) {
     filteredActivities = filterByCity($activities, NYC_BOUNDS);
     routes = buildRoutes(filteredActivities);
   }
 </script>
 
 <main class="h-screen p-4 flex flex-col gap-2">
-  <p>NYC Activities</p>
+  <div class="flex w-full justify-between items-center">
+    <h1>NYC</h1>
+    <SummaryStats neighborhoodsMap={featToRoutes} numActivities={filteredActivities.length} />
+  </div>
   {#if error}
     <p>{error}</p>
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
-  <div class="flex h-screen">
-    <BaseMap {routes} {neighborhoodsData} {maxNumRoutes} bind:visibleFeat={visibleNeighborhood}>
-      {#if visibleNeighborhood}
-        <NeighborhoodTag
-          name={visibleNeighborhood.properties.name}
-          value={visibleNeighborhood.properties.value}
-        />
-      {/if}
-    </BaseMap>
-    <Panel />
+  <div class="flex gap-4 h-[500px]">
+    <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedFeat />
+    <Panel {neighborhoods} bind:selectedNeighborhood />
   </div>
 </main>

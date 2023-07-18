@@ -18,21 +18,26 @@
   import { NYC_CENTER } from '$lib/nyc-constants';
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
   import type { Route } from '$types/client';
+  import Tag from './Tag.svelte';
 
   export let routes: Route[];
-  export let neighborhoodsData: FeatureCollection;
+  export let data: FeatureCollection;
   export let maxNumRoutes: number;
-  export let visibleFeat: Feature;
+  export let selectedFeat: Feature = null;
 
   let basemap: MapboxMap = null;
   let mapLoaded = false;
   let hoveredFeat: Feature = null;
-  let selectedFeat: Feature = null;
+  let visibleFeat: Feature = null;
   let prevVisibleFeat: Feature = null;
   let showAllRoutes = true;
 
   $: visibleFeat = hoveredFeat || selectedFeat;
-  $: if (mapLoaded && basemap && routes) addRoutesToMap(basemap, routes);
+  //TO-DO: don't want to add layers more than once
+  $: if (mapLoaded && basemap && routes) {
+    addRoutesToMap(basemap, routes);
+    addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);
+  }
   $: showAllRoutes = !selectedFeat;
   $: if (mapLoaded) {
     toggleRoutes(basemap, routes, showAllRoutes);
@@ -76,9 +81,8 @@
     basemap = createMap(NYC_CENTER);
     basemap.on('load', () => {
       mapLoaded = true;
-      const neighborhoodsLayer = addNeighborhoodsToMap(basemap, neighborhoodsData, maxNumRoutes);
+      const neighborhoodsLayer = addNeighborhoodsToMap(basemap, data, maxNumRoutes);
       addSelectedLayerToMap(basemap, NEIGHBORHOODS_SRC);
-      addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);
 
       basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
       basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
@@ -97,5 +101,7 @@
 
 <div class="relative flex-grow">
   <div id="map" class="w-full h-full" />
-  <slot />
+  {#if visibleFeat}
+    <Tag feature={visibleFeat} />
+  {/if}
 </div>

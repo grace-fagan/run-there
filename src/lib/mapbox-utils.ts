@@ -151,13 +151,11 @@ export const showFeatureRoutes = (map: MapboxMap, n: Feature) => {
 };
 
 export const unhoverFeature = (map: MapboxMap, n: Feature) => {
-  console.log('unhovering ', n?.id);
   if (!n) return;
   map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: false });
 };
 
 export const hideFeatureRoutes = (map: MapboxMap, n: Feature) => {
-  console.log('unhovering routes for ', n?.id);
   if (!n) return;
   const routesToHide = JSON.parse(n.properties.runs) as number[];
   routesToHide.forEach((route) => {

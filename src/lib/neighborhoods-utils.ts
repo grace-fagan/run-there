@@ -1,15 +1,15 @@
 import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
 import { polygon } from '@turf/helpers';
 import union from '@turf/union';
-import { CodeToBorough } from './nyc-constants';
+import { CodeToBorough, boroughMap } from './nyc-constants';
 import point from 'turf-point';
 import booleanIntersects from '@turf/boolean-intersects';
 import center from '@turf/center';
 import type { Route } from '$types/client';
-import type { NeighborhoodProperties } from '$types/neighborhoods/nyc';
+import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
 
-// this function cleans and adds route data to each feature in the collection
-export const populateData = (
+// this function cleans and adds route data to each feature in the raw data collection
+export const loadMapData = (
   data: FeatureCollection,
   routesMap: Map<number, string[]>
 ): FeatureCollection => {
@@ -45,11 +45,39 @@ export const populateData = (
           neighbors: feature.properties.neighbors,
           runs: routesMap.get(id),
           value: routesMap.get(id).length
-        } as NeighborhoodProperties,
+        },
         geometry: featurePolygon
       };
     })
   };
+};
+
+// get client borough data from client neighborhood data
+export const loadBoroughData = (neighborhoods: Neighborhood[]): ClientBorough[] => {
+  const neighborhoodsMap = new Map<number, Neighborhood>(neighborhoods.map((n) => [n.id, n]));
+  return Array.from(boroughMap.values())
+    .map((b) => {
+      // sort by number of runs
+      const neighborhoods = b.nIds
+        .map((id) => neighborhoodsMap.get(id))
+        .sort((a, b) => b.runs.length - a.runs.length);
+      // only count each run once
+      const runs = neighborhoods.reduce((prev, curr) => {
+        curr.runs.forEach((r) => {
+          if (!prev.includes(r)) prev.push(r);
+        });
+        return prev;
+      }, []);
+
+      return {
+        id: b.id,
+        name: b.name,
+        color: b.color,
+        neighborhoods,
+        runs
+      };
+    })
+    .sort((a, b) => b.runs.length - a.runs.length);
 };
 
 // recursive function that performs a DFS to find all neighborhoods that intersect with a given route
