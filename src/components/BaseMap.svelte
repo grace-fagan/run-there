@@ -13,7 +13,7 @@
     toggleRoutes,
     unhoverFeature
   } from '$lib/mapbox-utils';
-  import { afterUpdate, onMount } from 'svelte';
+  import { afterUpdate, onMount, tick } from 'svelte';
   import type { Feature, FeatureCollection } from 'geojson';
   import { NYC_CENTER } from '$lib/nyc-constants';
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
@@ -23,7 +23,7 @@
   export let routes: Route[];
   export let data: FeatureCollection;
   export let maxNumRoutes: number;
-  export let selectedFeat: Feature = null;
+  export let selectedId: number = null;
 
   let basemap: MapboxMap = null;
   let mapLoaded = false;
@@ -32,6 +32,11 @@
   let prevVisibleFeat: Feature = null;
   let showAllRoutes = true;
 
+  $: selectedFeat = data.features.find((f) => f.id === selectedId) as Feature;
+  $: if (mapLoaded && selectedFeat) {
+    selectNeighborhood(basemap, selectedFeat, NYC_CENTER);
+    hoverFeature(basemap, selectedFeat);
+  }
   $: visibleFeat = hoveredFeat || selectedFeat;
   //TO-DO: don't want to add layers more than once
   $: if (mapLoaded && basemap && routes) {
@@ -72,9 +77,7 @@
   const handleClick = (e: MapMouseEvent) => {
     if (e.features.length === 0) return;
     const currFeat = e.features[0];
-    selectedFeat = currFeat.id === selectedFeat?.id ? null : currFeat;
-    selectNeighborhood(basemap, selectedFeat, NYC_CENTER);
-    hoverFeature(basemap, currFeat);
+    selectedId = currFeat.id === selectedId ? null : currFeat.id;
   };
 
   onMount(() => {

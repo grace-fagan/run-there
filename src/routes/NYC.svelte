@@ -5,7 +5,6 @@
   import { NYC_BOUNDS, featureToNeighborhood } from '$lib/nyc-constants';
   import { activities } from '$lib/store';
   import type { Activity, Route, UserAuth } from '$types/client';
-  import type { Neighborhood } from '$types/neighborhoods/nyc';
   import BaseMap from '$components/BaseMap.svelte';
   import { getMaxValLength, mapNeighborhoodToRoutes, loadMapData } from '$lib/neighborhoods-utils';
   import type { Feature, FeatureCollection } from 'geojson';
@@ -17,10 +16,7 @@
   let error = '';
   let filteredActivities: Activity[] = $activities;
   let routes: Route[] = [];
-  let selectedFeat: Feature = null;
-  let selectedNeighborhood: Neighborhood = null;
-
-  $: selectedNeighborhood = selectedFeat ? featureToNeighborhood(selectedFeat) : null;
+  let selectedId: number = null;
 
   const loadActivities = () => {
     if (!$activities) {
@@ -74,7 +70,7 @@
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
   <div class="flex gap-4 h-[500px]">
-    <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedFeat />
-    <Panel {neighborhoods} bind:selectedNeighborhood />
+    <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
+    <Panel {neighborhoods} bind:selectedId />
   </div>
 </main>

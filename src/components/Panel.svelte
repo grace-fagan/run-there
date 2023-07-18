@@ -4,8 +4,9 @@
   import { afterUpdate } from 'svelte';
 
   export let neighborhoods: Neighborhood[];
-  export let selectedNeighborhood: Neighborhood;
+  export let selectedId: number;
   let prevSelectedNeighborhood: Neighborhood = null;
+  $: selectedNeighborhood = selectedId ? neighborhoods.find((n) => n.id === selectedId) : null;
 
   const boroughs = loadBoroughData(neighborhoods);
   let visibility = new Map<number, boolean>(
@@ -23,7 +24,6 @@
     visibility = visibility.set(id, !visible);
   };
 
-  $: console.log({ selectedNeighborhood });
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
     if (oldVal) visibility = visibility.set(oldVal.borough, false);
     if (newVal) visibility = visibility.set(newVal.borough, true);
@@ -49,7 +49,9 @@
     {#if visibility.get(id)}
       <div class="flex flex-col gap-2 overflow-scroll">
         {#each neighborhoods as n}
-          <p>{n.name} <span>({n.runs.length})</span></p>
+          <div on:pointerdown={() => (selectedId = n.id)}>
+            <p>{n.name} <span>({n.runs.length})</span></p>
+          </div>
         {/each}
       </div>
     {/if}

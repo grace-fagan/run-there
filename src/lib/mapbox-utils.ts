@@ -144,7 +144,8 @@ export const hoverFeature = (map: MapboxMap, n: Feature) => {
 
 export const showFeatureRoutes = (map: MapboxMap, n: Feature) => {
   if (!n) return;
-  const routesToShow = JSON.parse(n.properties.runs) as number[];
+  const runsData = n.properties.runs;
+  const routesToShow = (typeof runsData === 'string' ? JSON.parse(runsData) : runsData) as number[];
   routesToShow.forEach((route) => {
     map.setFeatureState({ source: ROUTES_SRC, id: route }, { visible: true });
   });
@@ -157,7 +158,8 @@ export const unhoverFeature = (map: MapboxMap, n: Feature) => {
 
 export const hideFeatureRoutes = (map: MapboxMap, n: Feature) => {
   if (!n) return;
-  const routesToHide = JSON.parse(n.properties.runs) as number[];
+  const runsData = n.properties.runs;
+  const routesToHide = (typeof runsData === 'string' ? JSON.parse(runsData) : runsData) as number[];
   routesToHide.forEach((route) => {
     map.removeFeatureState({ source: ROUTES_SRC, id: route });
   });
