@@ -63,7 +63,6 @@
 <main class="h-screen p-4 flex flex-col gap-2">
   <div class="flex w-full justify-between items-center">
     <h1>NYC</h1>
-    <SummaryStats neighborhoodsMap={featToRoutes} numActivities={filteredActivities.length} />
   </div>
   {#if error}
     <p>{error}</p>
@@ -71,6 +70,9 @@
   {/if}
   <div class="flex gap-4 h-[500px]">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
-    <Panel {neighborhoods} bind:selectedId />
+    <div class="flex flex-col gap-4">
+      <SummaryStats neighborhoodsMap={featToRoutes} numActivities={filteredActivities.length} />
+      <Panel {neighborhoods} bind:selectedId />
+    </div>
   </div>
 </main>

@@ -5,7 +5,13 @@
   $: totalNeighborhoods = neighborhoodsMap.size;
 </script>
 
-<div class="flex flex-col gap-2">
-  <h2>{completed} / {totalNeighborhoods} neighborhoods</h2>
-  <h2>{numActivities} activities</h2>
+<div class="flex flex-col gap-2 items-end">
+  <div class="flex gap-1 items-center">
+    <h2>{completed} / {totalNeighborhoods}</h2>
+    <p>neighborhoods</p>
+  </div>
+  <div class="flex gap-1 items-center">
+    <h2>{numActivities}</h2>
+    <p>activities</p>
+  </div>
 </div>

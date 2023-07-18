@@ -24,6 +24,8 @@
     visibility = visibility.set(id, !visible);
   };
 
+  const toggleNeighborhood = (id: number) => (selectedId = selectedId === id ? null : id);
+
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
     if (oldVal) visibility = visibility.set(oldVal.borough, false);
     if (newVal) visibility = visibility.set(newVal.borough, true);
@@ -38,7 +40,7 @@
   });
 </script>
 
-<div class="w-1/3 flex flex-col gap-2">
+<div class="flex flex-col gap-2">
   <h2>Neighborhoods</h2>
   {#each boroughs as { id, name, color, neighborhoods, runs }}
     <div class="flex gap-4 cursor-pointer" on:pointerdown={() => toggleVisibility(id)}>
@@ -47,10 +49,15 @@
       <p>{getCompletedNeighborhoods(neighborhoods)} / {neighborhoods.length}</p>
     </div>
     {#if visibility.get(id)}
-      <div class="flex flex-col gap-2 overflow-scroll">
+      <div class="flex flex-col gap-2 overflow-scroll cursor-pointer bg-white p-2">
         {#each neighborhoods as n}
-          <div on:pointerdown={() => (selectedId = n.id)}>
-            <p>{n.name} <span>({n.runs.length})</span></p>
+          <div class="flex gap-1 items-center" on:pointerdown={() => toggleNeighborhood(n.id)}>
+            <i
+              class={`fa-solid fa-check text-md ${n.runs.length > 0 ? 'text-black' : 'text-white'}`}
+            />
+            <p class={`${selectedId === n.id ? 'font-bold' : 'font-normal'}`}>
+              {n.name} <span>({n.runs.length})</span>
+            </p>
           </div>
         {/each}
       </div>
