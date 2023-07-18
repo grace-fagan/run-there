@@ -33,20 +33,25 @@
   let showAllRoutes = true;
 
   $: selectedFeat = data.features.find((f) => f.id === selectedId) as Feature;
-  $: if (mapLoaded && selectedFeat) {
-    selectNeighborhood(basemap, selectedFeat, NYC_CENTER);
-    hoverFeature(basemap, selectedFeat);
-  }
   $: visibleFeat = hoveredFeat || selectedFeat;
+  $: showAllRoutes = !selectedFeat;
+
   //TO-DO: don't want to add layers more than once
   $: if (mapLoaded && basemap && routes) {
     addRoutesToMap(basemap, routes);
     addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);
   }
-  $: showAllRoutes = !selectedFeat;
+
+  // runs when showAllRoutes changes
   $: if (mapLoaded) {
     toggleRoutes(basemap, routes, showAllRoutes);
     if (!showAllRoutes) showFeatureRoutes(basemap, visibleFeat);
+  }
+
+  // runs when selectedFeat changes
+  $: if (mapLoaded) {
+    selectNeighborhood(basemap, selectedFeat, NYC_CENTER);
+    hoverFeature(basemap, selectedFeat);
   }
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
