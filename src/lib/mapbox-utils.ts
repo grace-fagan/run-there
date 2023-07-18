@@ -96,6 +96,7 @@ export const addRoutesToMap = (map: MapboxMap, routes: Route[]) => {
       'line-opacity': ['case', ['boolean', ['feature-state', 'visible'], false], 1, 0]
     }
   });
+  toggleRoutes(map, routes);
 };
 
 export const toggleRoutes = (map: MapboxMap, routes: Route[], visible: boolean = true) => {
@@ -146,7 +147,6 @@ export const hoverFeature = (map: MapboxMap, n: Feature) => {
 };
 
 export const unhoverFeature = (map: MapboxMap, n: Feature) => {
-  console.log('unhovering...', n);
   if (!n) return;
   const routesToHide = JSON.parse(n.properties.runs) as number[];
   routesToHide.forEach((route) => {

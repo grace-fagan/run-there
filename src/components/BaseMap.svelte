@@ -30,11 +30,12 @@
 
   $: visibleFeat = hoveredFeat || selectedFeat;
   $: if (mapLoaded && basemap && routes) addRoutesToMap(basemap, routes);
-  $: if (mapLoaded && !visibleFeat) toggleRoutes(basemap, routes);
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
     unhoverFeature(basemap, oldVal);
     hoverFeature(basemap, newVal);
+    // if no visible feature, turn on all routes
+    if (!newVal) toggleRoutes(basemap, routes);
   };
 
   const handleMousemove = (e: MapMouseEvent) => {
@@ -51,7 +52,8 @@
   };
 
   const handleMouseleave = () => {
-    if (hoveredFeat) unhoverFeature(basemap, hoveredFeat);
+    // if feature is hovered and is not the selected feature
+    if (hoveredFeat && hoveredFeat?.id !== selectedFeat?.id) unhoverFeature(basemap, hoveredFeat);
     hoveredFeat = null;
   };
 
@@ -77,7 +79,7 @@
     });
   });
 
-  // handles watching a value and retaining its old value
+  // handles watching the visible feature value and retaining its old value
   afterUpdate(() => {
     if (prevVisibleFeat?.id !== visibleFeat?.id) {
       watchVisibleFeature(prevVisibleFeat, visibleFeat);
