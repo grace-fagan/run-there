@@ -5,9 +5,11 @@
     addRoutesToMap,
     addSelectedLayerToMap,
     createMap,
+    hideFeatureRoutes,
     hoverFeature,
     NEIGHBORHOODS_SRC,
     selectNeighborhood,
+    showFeatureRoutes,
     toggleRoutes,
     unhoverFeature
   } from '$lib/mapbox-utils';
@@ -27,15 +29,19 @@
   let hoveredFeat: Feature = null;
   let selectedFeat: Feature = null;
   let prevVisibleFeat: Feature = null;
+  let showAllRoutes = true;
 
   $: visibleFeat = hoveredFeat || selectedFeat;
   $: if (mapLoaded && basemap && routes) addRoutesToMap(basemap, routes);
+  $: showAllRoutes = !selectedFeat;
+  $: if (mapLoaded) {
+    toggleRoutes(basemap, routes, showAllRoutes);
+    if (!showAllRoutes) showFeatureRoutes(basemap, visibleFeat);
+  }
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
     unhoverFeature(basemap, oldVal);
     hoverFeature(basemap, newVal);
-    // if no visible feature, turn on all routes
-    if (!newVal) toggleRoutes(basemap, routes);
   };
 
   const handleMousemove = (e: MapMouseEvent) => {
@@ -43,17 +49,18 @@
     // if no feature exists or the feature is already hovered, return
     if (e.features.length === 0) return;
     const currFeat = e.features[0];
-    if (hoveredFeat?.id === currFeat.id) return;
+    if (hoveredFeat?.id === currFeat?.id) return;
     // else unhover old feature and hover new feature
     unhoverFeature(basemap, hoveredFeat);
     hoveredFeat = currFeat;
-    toggleRoutes(basemap, routes, false);
     hoverFeature(basemap, hoveredFeat);
   };
 
   const handleMouseleave = () => {
-    // if feature is hovered and is not the selected feature
-    if (hoveredFeat && hoveredFeat?.id !== selectedFeat?.id) unhoverFeature(basemap, hoveredFeat);
+    // if the hovered feature is the selected feature, return
+    if (hoveredFeat && hoveredFeat?.id === selectedFeat?.id) return;
+    unhoverFeature(basemap, hoveredFeat);
+    if (!showAllRoutes) hideFeatureRoutes(basemap, hoveredFeat);
     hoveredFeat = null;
   };
 

@@ -139,20 +139,30 @@ export const addOutlinesToMap = (map: MapboxMap, source: string) => {
 
 export const hoverFeature = (map: MapboxMap, n: Feature) => {
   if (!n) return;
+  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: true });
+};
+
+export const showFeatureRoutes = (map: MapboxMap, n: Feature) => {
+  if (!n) return;
   const routesToShow = JSON.parse(n.properties.runs) as number[];
   routesToShow.forEach((route) => {
     map.setFeatureState({ source: ROUTES_SRC, id: route }, { visible: true });
   });
-  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: true });
 };
 
 export const unhoverFeature = (map: MapboxMap, n: Feature) => {
+  console.log('unhovering ', n?.id);
+  if (!n) return;
+  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: false });
+};
+
+export const hideFeatureRoutes = (map: MapboxMap, n: Feature) => {
+  console.log('unhovering routes for ', n?.id);
   if (!n) return;
   const routesToHide = JSON.parse(n.properties.runs) as number[];
   routesToHide.forEach((route) => {
     map.removeFeatureState({ source: ROUTES_SRC, id: route });
   });
-  map.setFeatureState({ source: NEIGHBORHOODS_SRC, id: n.id }, { hover: false });
 };
 
 export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: LatLng) => {
