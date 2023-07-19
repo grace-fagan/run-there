@@ -1,13 +1,12 @@
 <script lang="ts">
   import { authURL, getLocalActivities, getLocalAuth, scope } from '$lib/auth-utils';
   import type { UserAuth } from '$types/client';
-  import { getUserAuth, getUserActivities } from '$lib/api';
+  import { getUserAuth, getBatchActivities } from '$lib/api';
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
-  import type { StravaSummaryActivity } from '$types/stravaAPI';
-  import { promiseWhile } from '$lib/api-utils';
   import { activities } from '$lib/store';
   import { cleanActivities } from '$lib/activity-utiils';
+  import { writable } from 'svelte/store';
 
   const queryParams = new URLSearchParams(window.location.search);
   const authedScope = queryParams.get('scope');
@@ -18,30 +17,7 @@
 
   let error = '';
   let fetchingActivities = false;
-  let totalFetchedActivites: StravaSummaryActivity[] = [];
-
-  const fetchAllActivities = async (accessToken: string) => {
-    let page = 1;
-    let currActivities: StravaSummaryActivity[] = [];
-
-    const isNullPage = () => currActivities.length === 0 && page > 1;
-
-    const getPage = async () => {
-      console.log('getting page: ', page);
-      currActivities = await getUserActivities(accessToken, page);
-      console.log({ currActivities });
-      totalFetchedActivites = totalFetchedActivites.concat(currActivities);
-      page++;
-    };
-
-    // can only retrieve one page at a time due to Netlify's 10 second max runtime for serverless functions
-    return promiseWhile(isNullPage, getPage).then(() => {
-      console.log('finished fetching data!', { totalFetchedActivites });
-      const cleanedActivities = cleanActivities(totalFetchedActivites);
-      $activities = cleanedActivities;
-      return cleanedActivities;
-    });
-  };
+  const totalActivitiesFetched = writable(0);
 
   // authenticate user
   onMount(async () => {
@@ -85,9 +61,11 @@
       if (accessToken && !localActivities) {
         try {
           fetchingActivities = true;
-          const newActivities = await fetchAllActivities(accessToken);
-          if (!newActivities) throw new Error('No activity data found.');
-          localStorage.setItem(`activities-${athleteId}`, JSON.stringify(newActivities));
+          const rawActivities = await getBatchActivities(accessToken, totalActivitiesFetched);
+          if (!rawActivities) throw new Error('No activity data found.');
+          const cleanedActivities = cleanActivities(rawActivities);
+          $activities = cleanedActivities;
+          localStorage.setItem(`activities-${athleteId}`, JSON.stringify(cleanedActivities));
         } catch (error) {
           //TO-DO: error handling
           console.error(error);
@@ -116,6 +94,6 @@
   {/if}
   {#if fetchingActivities}
     <p>Fetching activities...</p>
-    <p>there are {totalFetchedActivites.length}</p>
+    <p>there are {$totalActivitiesFetched}</p>
   {/if}
 </main>

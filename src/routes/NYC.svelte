@@ -12,6 +12,7 @@
   import Icon from '$components/global/Icon.svelte';
   import Panel from '$components/Panel.svelte';
   import SummaryStats from '$components/SummaryStats.svelte';
+  import Refresh from '$components/Refresh.svelte';
 
   let error = '';
   let filteredActivities: Activity[] = $activities;
@@ -63,6 +64,7 @@
 <main class="h-screen p-4 flex flex-col gap-2">
   <div class="flex w-full justify-between items-center">
     <h1>NYC</h1>
+    <Refresh />
   </div>
   {#if error}
     <p>{error}</p>
@@ -71,7 +73,10 @@
   <div class="flex gap-4 h-[500px]">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
     <div class="flex flex-col gap-4">
-      <SummaryStats neighborhoodsMap={featToRoutes} numActivities={filteredActivities.length} />
+      <SummaryStats
+        neighborhoodsMap={featToRoutes}
+        numActivities={filteredActivities?.length || 0}
+      />
       <Panel {neighborhoods} bind:selectedId />
     </div>
   </div>

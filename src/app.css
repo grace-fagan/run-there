@@ -27,4 +27,8 @@
     @apply text-sm;
     @apply font-normal;
   }
+
+  .error {
+    @apply text-red-600;
+  }
 }

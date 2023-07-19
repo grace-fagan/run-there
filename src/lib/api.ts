@@ -1,4 +1,6 @@
-import { getServerUrl } from './api-utils';
+import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
+import { type Writable } from 'svelte/store';
+import { getServerUrl, promiseWhile } from './api-utils';
 
 const baseURL = getServerUrl(import.meta.env);
 
@@ -14,9 +16,9 @@ export const getUserAuth = async (token: string, grantType: string, athleteId?: 
   });
 };
 
-export const getUserActivities = async (accessToken: string, startPage: number) => {
+export const getUserActivities = async (accessToken: string, startPage: number, after?: number) => {
   return fetch(
-    `${baseURL}/.netlify/functions/getUserData?token=${accessToken}&pageNum=${startPage}`
+    `${baseURL}/.netlify/functions/getUserData?token=${accessToken}&pageNum=${startPage}&after=${after}`
   ).then(async (r) => {
     if (!r.ok) {
       const error = await r.json();
@@ -24,4 +26,27 @@ export const getUserActivities = async (accessToken: string, startPage: number) 
     }
     return r.json();
   });
+};
+
+export const getBatchActivities = async (
+  accessToken: string,
+  totalFetched: Writable<number>,
+  after?: number
+) => {
+  let page = 1;
+  let currActivities: StravaSummaryActivity[] = [];
+  let totalFetchedActivities: StravaSummaryActivity[] = [];
+
+  const isNullPage = () => currActivities.length === 0 && page > 1;
+
+  const getPage = async () => {
+    console.log('getting page: ', page);
+    currActivities = await getUserActivities(accessToken, page, after);
+    totalFetchedActivities = totalFetchedActivities.concat(currActivities);
+    totalFetched.update(() => totalFetchedActivities.length);
+    page++;
+  };
+
+  // can only retrieve one page at a time due to Netlify's 10 second max runtime for serverless functions
+  return promiseWhile(isNullPage, getPage).then(() => totalFetchedActivities);
 };
