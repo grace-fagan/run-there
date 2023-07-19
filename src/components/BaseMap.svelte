@@ -106,7 +106,7 @@
   });
 </script>
 
-<div class="relative flex-grow">
+<div class="relative grow md:h-full">
   <div id="map" class="w-full h-full" />
   {#if visibleFeat}
     <Tag feature={visibleFeat} />

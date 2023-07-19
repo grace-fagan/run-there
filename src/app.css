@@ -5,6 +5,7 @@
 @layer base {
   body {
     @apply bg-stone-100;
+    @apply text-gray-800;
   }
 
   h1 {
@@ -43,4 +44,7 @@
 
 .content {
   height: calc(100% - 8rem);
+  @media screen and (max-width: 768px) {
+    height: calc(100% - 7rem);
+  }
 }

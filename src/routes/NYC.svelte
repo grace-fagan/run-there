@@ -65,17 +65,17 @@
   $: totalNeighborhoods = featToRoutes.size;
 </script>
 
-<main class="relative h-screen max-h-screen p-4 flex flex-col gap-2 max-w-6xl m-auto">
+<main class="relative h-screen max-h-screen p-4 flex flex-col gap-4 max-w-6xl m-auto">
   <CityHeader city={'NYC'} {numCompleted} {totalNeighborhoods} {numActivities} />
   {#if error}
     <p>{error}</p>
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
-  <div class="content flex gap-4">
+  <div class="content flex flex-col gap-4 md:flex-row">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
     <InfoPanel {neighborhoods} bind:selectedId />
   </div>
-  <div class="h-8">
+  <div class="h-4 md:h-8">
     <Refresh />
   </div>
 </main>
