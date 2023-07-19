@@ -158,7 +158,6 @@ export const hoverFeature = (map: MapboxMap, n: Feature) => {
 
 export const showFeatureRoutes = (map: MapboxMap, n: Feature) => {
   if (!n) return;
-  console.log('showing feature routes for...', n.id);
   const runsData = n.properties.runs;
   const routesToShow = (typeof runsData === 'string' ? JSON.parse(runsData) : runsData) as number[];
   routesToShow.forEach((route) => {

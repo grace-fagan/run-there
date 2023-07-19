@@ -9,6 +9,7 @@
   const totalFetched = writable(0);
 
   let fetching = false;
+  let hasFetched = false;
   let errorMsg = '';
   let mostRecent: Activity = null;
   let timeAfter: number = null;
@@ -25,7 +26,6 @@
       const accessToken = userAuth.accessToken;
       const athleteId = userAuth.id;
       const rawActivities = await getBatchActivities(accessToken, totalFetched, timeAfter);
-      if (!rawActivities || rawActivities.length === 0) errorMsg = 'No new activities';
       const newActivities = cleanActivities(rawActivities);
       console.log({ newActivities });
       newActivities.forEach((newA) => {
@@ -36,6 +36,8 @@
         }
       });
       updateLocalActivities(athleteId, $activities);
+      hasFetched = true;
+      setTimeout(() => (hasFetched = false), 2000);
     } catch (error) {
       errorMsg = error;
     } finally {
@@ -50,9 +52,9 @@
   {/if}
   <div class="flex gap-2 items-center cursor-pointer" on:pointerdown={refreshActivities}>
     <i
-      class={`fa-solid fa-rotate-right hover:scale-110 transition-all text-black ${
-        fetching ? 'fa-spin' : ''
-      }`}
+      class={`fa-solid text-black ${
+        hasFetched ? 'fa-check' : 'fa-rotate-right hover:scale-110 transition-all'
+      }  ${fetching ? 'fa-spin' : ''}`}
     />
     <p>{fetching ? 'Refreshing...' : 'Refresh activities'}</p>
   </div>
