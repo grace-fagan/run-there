@@ -1,9 +1,10 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
+import { handleNetworkError } from '$lib/error';
 
-const getUserDataByPage = async (accessToken: string, page: number) => {
+const getUserDataByPage = async (accessToken: string, page: string, after?: string) => {
   const response = await axios.get(
-    `https://www.strava.com/api/v3/athlete/activities?per_page=200&page=${page}`,
+    `https://www.strava.com/api/v3/athlete/activities?per_page=200&page=${page}&after=${after}`,
     { headers: { Authorization: `Bearer ${accessToken}` } }
   );
   return response;
@@ -17,13 +18,14 @@ const handler: Handler = async (event: HandlerEvent) => {
 
     const accessToken = queryParams.token || '';
     const pageNum = queryParams.pageNum;
+    const after = queryParams.after;
 
     if (!accessToken || !pageNum) throw new Error('missing request parameters');
 
     let activities = [];
-    const activityPage = await getUserDataByPage(accessToken, Number(pageNum));
+    if (after !== undefined) console.log('getting activities after: ', after);
+    const activityPage = await getUserDataByPage(accessToken, pageNum, after);
     if (!activityPage.data) throw new Error('invalid activity data');
-
     console.log('getting activities for page ', pageNum, 'there are ', activityPage.data.length);
     if (activityPage.data.length !== 0) activities = activities.concat(activityPage.data);
 
@@ -35,9 +37,10 @@ const handler: Handler = async (event: HandlerEvent) => {
       }
     };
   } catch (error) {
+    const errorMsg = handleNetworkError(error);
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: `Could not fetch activity data: ${error}` }),
+      body: JSON.stringify({ message: `Could not fetch activity data: ${errorMsg}` }),
       headers: {
         'Access-Control-Allow-Origin': '*'
       }

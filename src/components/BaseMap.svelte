@@ -36,7 +36,6 @@
   $: visibleFeat = hoveredFeat || selectedFeat;
   $: showAllRoutes = !selectedFeat;
 
-  //TO-DO: don't want to add layers more than once
   $: if (mapLoaded && basemap && routes) {
     addRoutesToMap(basemap, routes);
     addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);

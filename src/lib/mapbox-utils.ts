@@ -27,43 +27,51 @@ export const addNeighborhoodsToMap = (
   features: FeatureCollection,
   maxValue: number
 ) => {
-  map.addSource(NEIGHBORHOODS_SRC, {
-    type: 'geojson',
-    data: features
-  });
-
   const layerName = NEIGHBORHOODS_SRC + '-fill';
 
-  map.addLayer({
-    id: layerName,
-    type: 'fill',
-    source: NEIGHBORHOODS_SRC,
-    paint: {
-      'fill-color': ['get', 'color'],
-      'fill-opacity': [
-        'case',
-        ['==', maxValue, 0],
-        0.2,
-        ['==', ['get', 'value'], 0],
-        0,
-        ['>', ['get', 'value'], 0],
-        [
-          'interpolate',
-          ['exponential', 0.97],
-          ['get', 'value'],
-          1,
-          0.2,
-          maxValue <= 1 ? 1.1 : maxValue,
-          0.9
-        ],
-        0.2
-      ]
+  if (!map.getSource(NEIGHBORHOODS_SRC)) {
+    map.addSource(NEIGHBORHOODS_SRC, {
+      type: 'geojson',
+      data: features
+    });
+
+    if (!map.getLayer(layerName)) {
+      map.addLayer({
+        id: layerName,
+        type: 'fill',
+        source: NEIGHBORHOODS_SRC,
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': [
+            'case',
+            ['==', maxValue, 0],
+            0.2,
+            ['==', ['get', 'value'], 0],
+            0,
+            ['>', ['get', 'value'], 0],
+            [
+              'interpolate',
+              ['exponential', 0.97],
+              ['get', 'value'],
+              1,
+              0.2,
+              maxValue <= 1 ? 1.1 : maxValue,
+              0.9
+            ],
+            0.2
+          ]
+        }
+      });
     }
-  });
+  }
   return layerName;
 };
 
 export const addRoutesToMap = (map: MapboxMap, routes: Route[]) => {
+  const layerName = 'routes-line';
+  // remove old routes layer if already exists
+  if (map.getLayer(layerName)) map.removeLayer(layerName);
+
   let routeFeatures = [];
   routes.forEach((route) => {
     routeFeatures = routeFeatures.concat({
@@ -73,6 +81,8 @@ export const addRoutesToMap = (map: MapboxMap, routes: Route[]) => {
     });
   });
 
+  // remove old routes source if already exists
+  if (map.getSource(ROUTES_SRC)) map.removeSource(ROUTES_SRC);
   map.addSource(ROUTES_SRC, {
     type: 'geojson',
     data: {
@@ -110,8 +120,10 @@ export const toggleRoutes = (map: MapboxMap, routes: Route[], visible: boolean =
 };
 
 export const addSelectedLayerToMap = (map: MapboxMap, source: string) => {
+  const layerName = source + '-selected';
+  if (map.getLayer(layerName)) map.removeLayer(layerName);
   map.addLayer({
-    id: source + '-selected',
+    id: layerName,
     type: 'fill',
     source,
     layout: {
@@ -125,8 +137,10 @@ export const addSelectedLayerToMap = (map: MapboxMap, source: string) => {
 };
 
 export const addOutlinesToMap = (map: MapboxMap, source: string) => {
+  const layerName = source + '-outline';
+  if (map.getLayer(layerName)) map.removeLayer(layerName);
   map.addLayer({
-    id: source + '-outline',
+    id: layerName,
     type: 'line',
     source,
     paint: {
