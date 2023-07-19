@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  body {
+    @apply bg-stone-100;
+  }
+
   h1 {
     @apply text-5xl;
     @apply font-bold;
@@ -31,4 +35,12 @@
   .error {
     @apply text-red-600;
   }
+
+  .secondary {
+    @apply text-xs;
+  }
+}
+
+.content {
+  height: calc(100% - 8rem);
 }

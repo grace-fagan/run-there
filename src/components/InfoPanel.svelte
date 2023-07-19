@@ -2,11 +2,14 @@
   import type { Neighborhood } from '$types/neighborhoods/nyc';
   import { loadBoroughData } from '$lib/neighborhoods-utils';
   import { afterUpdate } from 'svelte';
+  import ProgressBar from './ProgressBar.svelte';
 
   export let neighborhoods: Neighborhood[];
   export let selectedId: number;
+
   let prevSelectedNeighborhood: Neighborhood = null;
   $: selectedNeighborhood = selectedId ? neighborhoods.find((n) => n.id === selectedId) : null;
+  $: maxNeighborhoods = boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
 
   const boroughs = loadBoroughData(neighborhoods);
   let visibility = new Map<number, boolean>(
@@ -40,18 +43,32 @@
   });
 </script>
 
-<div class="flex flex-col gap-2">
-  <h2>Neighborhoods</h2>
+<div class="flex flex-col w-1/3 gap-2 mt-8">
+  <div class="grid grid-cols-[25px_100px_auto] gap-3">
+    <p class="col-span-2">Runs</p>
+    <p>Neighborhoods</p>
+  </div>
   {#each boroughs as { id, name, color, neighborhoods, runs }}
-    <div class="flex gap-4 cursor-pointer" on:pointerdown={() => toggleVisibility(id)}>
+    <div
+      class="grid grid-cols-[25px_100px_auto] gap-3 cursor-pointer py-2"
+      on:pointerdown={() => toggleVisibility(id)}
+    >
       <p>{runs.length}</p>
-      <p>{name}</p>
-      <p>{getCompletedNeighborhoods(neighborhoods)} / {neighborhoods.length}</p>
+      <p class="font-semibold">{name}</p>
+      <ProgressBar
+        completed={getCompletedNeighborhoods(neighborhoods)}
+        {color}
+        total={neighborhoods.length}
+        maxTotal={maxNeighborhoods}
+      />
     </div>
     {#if visibility.get(id)}
-      <div class="flex flex-col gap-2 overflow-scroll cursor-pointer bg-white p-2">
+      <div class="flex flex-col gap-2 overflow-scroll p-2 bg-white rounded-md">
         {#each neighborhoods as n}
-          <div class="flex gap-1 items-center" on:pointerdown={() => toggleNeighborhood(n.id)}>
+          <div
+            class="flex gap-1 items-center cursor-pointer"
+            on:pointerdown={() => toggleNeighborhood(n.id)}
+          >
             <i
               class={`fa-solid fa-check text-md ${n.runs.length > 0 ? 'text-black' : 'text-white'}`}
             />

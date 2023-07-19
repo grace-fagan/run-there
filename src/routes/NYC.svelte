@@ -10,12 +10,13 @@
   import type { Feature, FeatureCollection } from 'geojson';
   import NYCData from '$data/NYC.json';
   import Icon from '$components/global/Icon.svelte';
-  import Panel from '$components/Panel.svelte';
-  import SummaryStats from '$components/SummaryStats.svelte';
+  import InfoPanel from '$components/InfoPanel.svelte';
+  import CityHeader from '$components/CityHeader.svelte';
   import Refresh from '$components/Refresh.svelte';
 
   let error = '';
   let filteredActivities: Activity[] = $activities;
+  let numActivities = 0;
   let routes: Route[] = [];
   let selectedId: number = null;
 
@@ -53,31 +54,28 @@
 
   $: if ($activities) {
     filteredActivities = filterByCity($activities, NYC_BOUNDS);
+    numActivities = filteredActivities.length;
     routes = buildRoutes(filteredActivities);
   }
   $: featToRoutes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, routes);
   $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
   $: maxNumRoutes = getMaxValLength(featToRoutes);
   $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
+  $: numCompleted = Array.from(featToRoutes.values()).filter((arr) => arr.length > 0).length;
+  $: totalNeighborhoods = featToRoutes.size;
 </script>
 
-<main class="h-screen p-4 flex flex-col gap-2">
-  <div class="flex w-full justify-between items-center">
-    <h1>NYC</h1>
-    <Refresh />
-  </div>
+<main class="relative h-screen max-h-screen p-4 flex flex-col gap-2 max-w-6xl m-auto">
+  <CityHeader city={'NYC'} {numCompleted} {totalNeighborhoods} {numActivities} />
   {#if error}
     <p>{error}</p>
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
-  <div class="flex gap-4 h-[500px]">
+  <div class="content flex gap-4">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
-    <div class="flex flex-col gap-4">
-      <SummaryStats
-        neighborhoodsMap={featToRoutes}
-        numActivities={filteredActivities?.length || 0}
-      />
-      <Panel {neighborhoods} bind:selectedId />
-    </div>
+    <InfoPanel {neighborhoods} bind:selectedId />
+  </div>
+  <div class="h-8">
+    <Refresh />
   </div>
 </main>
