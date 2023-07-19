@@ -10,18 +10,21 @@
   import type { Feature, FeatureCollection } from 'geojson';
   import NYCData from '$data/NYC.json';
   import Icon from '$components/global/Icon.svelte';
-  import Panel from '$components/Panel.svelte';
-  import SummaryStats from '$components/SummaryStats.svelte';
+  import InfoPanel from '$components/InfoPanel.svelte';
+  import CityHeader from '$components/CityHeader.svelte';
   import Refresh from '$components/Refresh.svelte';
 
   let error = '';
   let filteredActivities: Activity[] = $activities;
+  let numActivities = 0;
   let routes: Route[] = [];
   let selectedId: number = null;
 
   const loadActivities = () => {
+    console.log('loading activities');
     if (!$activities) {
       const userData = JSON.parse(localStorage.getItem('userAuth')) as UserAuth;
+      console.log({ userData });
       const athleteId = userData ? userData.id : '';
       if (!athleteId) {
         error = 'No athlete data found, need to reload app to give permissions again';
@@ -29,6 +32,7 @@
       }
 
       const localActivities = getLocalActivities(athleteId);
+      console.log({ localActivities });
       if (!localActivities) {
         // TO-DO: give option to refetch data
         error = 'No activities found. Try with a new user?';
@@ -53,31 +57,29 @@
 
   $: if ($activities) {
     filteredActivities = filterByCity($activities, NYC_BOUNDS);
+    numActivities = filteredActivities.length;
     routes = buildRoutes(filteredActivities);
   }
   $: featToRoutes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, routes);
   $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
   $: maxNumRoutes = getMaxValLength(featToRoutes);
   $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
+  $: numCompleted = Array.from(featToRoutes.values()).filter((arr) => arr.length > 0).length;
+  $: totalNeighborhoods = featToRoutes.size;
+  $: console.log($activities);
 </script>
 
-<main class="h-screen p-4 flex flex-col gap-2">
-  <div class="flex w-full justify-between items-center">
-    <h1>NYC</h1>
-    <Refresh />
-  </div>
+<main class="relative h-screen max-h-screen px-10 py-6 flex flex-col gap-4 max-w-6xl m-auto">
+  <CityHeader city={'NYC'} {numCompleted} {totalNeighborhoods} {numActivities} />
   {#if error}
     <p>{error}</p>
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
-  <div class="flex gap-4 h-[500px]">
+  <div class="content flex flex-col gap-4 md:flex-row">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
-    <div class="flex flex-col gap-4">
-      <SummaryStats
-        neighborhoodsMap={featToRoutes}
-        numActivities={filteredActivities?.length || 0}
-      />
-      <Panel {neighborhoods} bind:selectedId />
-    </div>
+    <InfoPanel {neighborhoods} bind:selectedId />
+  </div>
+  <div class="h-4 md:h-8">
+    <Refresh />
   </div>
 </main>

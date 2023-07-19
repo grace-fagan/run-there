@@ -46,19 +46,18 @@
   };
 </script>
 
-<div class="flex flex-col gap-2">
-  {#if errorMsg}
-    <p class="text-xs error">{errorMsg}</p>
-  {/if}
+<div class="flex gap-2">
   <div class="flex gap-2 items-center cursor-pointer" on:pointerdown={refreshActivities}>
     <i
       class={`fa-solid text-black ${
         hasFetched ? 'fa-check' : 'fa-rotate-right hover:scale-110 transition-all'
       }  ${fetching ? 'fa-spin' : ''}`}
     />
-    <p>{fetching ? 'Refreshing...' : 'Refresh activities'}</p>
   </div>
   {#if mostRecent}
-    <p>Latest activity: {formatDate(mostRecent.startDate)}</p>
+    <p class="secondary">Latest activity: {formatDate(mostRecent.startDate)}</p>
+  {/if}
+  {#if errorMsg}
+    <p class="text-xs error">{errorMsg}</p>
   {/if}
 </div>
