@@ -6,7 +6,7 @@
 </script>
 
 <div class="flex w-full justify-between items-start h-16">
-  <div class="flex flex-col md:flex-row md:gap-2 md:items-end">
+  <div class="flex flex-col items-start">
     <h2>{city}</h2>
     <p>({numActivities} activities)</p>
   </div>

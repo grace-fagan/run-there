@@ -1,12 +1,16 @@
 <script lang="ts">
   import type { Neighborhood } from '$types/neighborhoods/nyc';
+  import { isMobile } from '$lib/store';
 
   export let selectedId: number;
   export let neighborhoods: Neighborhood[];
   const toggleNeighborhood = (id: number) => (selectedId = selectedId === id ? null : id);
 </script>
 
-<div class="flex flex-col gap-2 overflow-scroll py-2 px-4 bg-white rounded-md">
+<div
+  class="flex flex-col gap-2 overflow-scroll py-2 px-4 bg-white rounded-md"
+  style="height: {$isMobile ? 'calc(100% - 2.25rem)' : 'auto'}"
+>
   {#each neighborhoods as n}
     <div
       class="flex gap-2 items-center cursor-pointer"

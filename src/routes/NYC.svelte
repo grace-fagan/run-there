@@ -21,8 +21,10 @@
   let selectedId: number = null;
 
   const loadActivities = () => {
+    console.log('loading activities');
     if (!$activities) {
       const userData = JSON.parse(localStorage.getItem('userAuth')) as UserAuth;
+      console.log({ userData });
       const athleteId = userData ? userData.id : '';
       if (!athleteId) {
         error = 'No athlete data found, need to reload app to give permissions again';
@@ -30,6 +32,7 @@
       }
 
       const localActivities = getLocalActivities(athleteId);
+      console.log({ localActivities });
       if (!localActivities) {
         // TO-DO: give option to refetch data
         error = 'No activities found. Try with a new user?';
@@ -63,9 +66,10 @@
   $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
   $: numCompleted = Array.from(featToRoutes.values()).filter((arr) => arr.length > 0).length;
   $: totalNeighborhoods = featToRoutes.size;
+  $: console.log($activities);
 </script>
 
-<main class="relative h-screen max-h-screen p-4 flex flex-col gap-4 max-w-6xl m-auto">
+<main class="relative h-screen max-h-screen px-10 py-6 flex flex-col gap-4 max-w-6xl m-auto">
   <CityHeader city={'NYC'} {numCompleted} {totalNeighborhoods} {numActivities} />
   {#if error}
     <p>{error}</p>

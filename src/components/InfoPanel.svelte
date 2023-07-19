@@ -55,24 +55,21 @@
       }
     }
   });
-  $: console.log($isMobile, selectedBorough);
 </script>
 
 {#if $isMobile && selectedBorough}
-  <div class="h-1/2">
-    <div class="flex w-full gap-4 h-1/2">
-      <i
-        class="pt-3 fa-solid fa-arrow-left text-black"
-        on:pointerdown={() => toggleVisibility(selectedBorough.id)}
-      />
-      <div class="h-full grow">
-        <BoroughHeader borough={selectedBorough} {maxNeighborhoods} />
-        <NeighborhoodsList neighborhoods={selectedBorough.neighborhoods} bind:selectedId />
-      </div>
+  <div class="flex w-full gap-4 h-1/2">
+    <i
+      class="pt-3 fa-solid fa-arrow-left text-black"
+      on:pointerdown={() => toggleVisibility(selectedBorough.id)}
+    />
+    <div class="h-full grow">
+      <BoroughHeader borough={selectedBorough} {maxNeighborhoods} />
+      <NeighborhoodsList neighborhoods={selectedBorough.neighborhoods} bind:selectedId />
     </div>
   </div>
 {:else}
-  <div class="flex flex-col w-full md:w-1/3 gap-2 h-1/2 md:h-auto">
+  <div class="flex flex-col w-full md:w-1/3 gap-2 max-h-1/2 md:h-auto">
     <div class="grid grid-cols-[25px_100px_auto] gap-3 border-b border-stone-200 text-stone-400">
       <p class="col-span-2">Activities</p>
       <p>Neighborhoods</p>
@@ -80,7 +77,7 @@
     {#each boroughs as borough}
       <BoroughHeader {borough} {toggleVisibility} {maxNeighborhoods} />
       {#if !$isMobile && visibility.get(borough.id)}
-        <NeighborhoodsList {neighborhoods} bind:selectedId />
+        <NeighborhoodsList neighborhoods={borough.neighborhoods} bind:selectedId />
       {/if}
     {/each}
   </div>
