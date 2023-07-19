@@ -1,5 +1,6 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
+import { handleNetworkError } from '$lib/error';
 
 const clientID = process.env.VITE_CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
@@ -50,9 +51,10 @@ const handler: Handler = async (event: HandlerEvent) => {
       }
     };
   } catch (error) {
+    const errorMsg = handleNetworkError(error);
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: `Could not authorize user: ${error}` }),
+      body: JSON.stringify({ message: `Could not authorize user: ${errorMsg}` }),
       headers: {
         'Access-Control-Allow-Origin': '*'
       }

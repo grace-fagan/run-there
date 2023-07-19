@@ -1,5 +1,6 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
+import { handleNetworkError } from '$lib/error';
 
 const getUserDataByPage = async (accessToken: string, page: string, after?: string) => {
   const response = await axios.get(
@@ -36,9 +37,10 @@ const handler: Handler = async (event: HandlerEvent) => {
       }
     };
   } catch (error) {
+    const errorMsg = handleNetworkError(error);
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: `Could not fetch activity data: ${error}` }),
+      body: JSON.stringify({ message: `Could not fetch activity data: ${errorMsg}` }),
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
