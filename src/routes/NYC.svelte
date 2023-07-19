@@ -49,16 +49,16 @@
     });
   };
 
-  $: featToRoutes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, routes);
-  $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
-  $: maxNumRoutes = getMaxValLength(featToRoutes);
-  $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
-
   loadActivities();
+
   $: if ($activities) {
     filteredActivities = filterByCity($activities, NYC_BOUNDS);
     routes = buildRoutes(filteredActivities);
   }
+  $: featToRoutes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, routes);
+  $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
+  $: maxNumRoutes = getMaxValLength(featToRoutes);
+  $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
 </script>
 
 <main class="h-screen p-4 flex flex-col gap-2">

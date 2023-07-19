@@ -51,6 +51,7 @@ const handler: Handler = async (event: HandlerEvent) => {
       }
     };
   } catch (error) {
+    console.error(error);
     const errorMsg = handleNetworkError(error);
     return {
       statusCode: 400,

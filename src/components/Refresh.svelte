@@ -2,7 +2,7 @@
   import { activities } from '$lib/store';
   import { cleanActivities, formatDate } from '$lib/activity-utiils';
   import { getBatchActivities } from '$lib/api';
-  import { getLocalAuth } from '$lib/auth-utils';
+  import { getValidAuth, updateLocalActivities } from '$lib/auth-utils';
   import { writable } from 'svelte/store';
   import type { Activity } from '$types/client';
 
@@ -13,19 +13,17 @@
   let mostRecent: Activity = null;
   let timeAfter: number = null;
 
-  $: if ($activities.length > 0) {
+  $: if ($activities && $activities.length > 0) {
     mostRecent = $activities[$activities.length - 1];
     timeAfter = mostRecent && new Date(mostRecent.startDate).getTime() / 1000;
   }
 
   const refreshActivities = async () => {
     fetching = true;
-
-    const auth = getLocalAuth();
-    // TO-DO: check if access token is expired
-    const accessToken = auth.accessToken;
-
     try {
+      const userAuth = await getValidAuth();
+      const accessToken = userAuth.accessToken;
+      const athleteId = userAuth.id;
       const rawActivities = await getBatchActivities(accessToken, totalFetched, timeAfter);
       if (!rawActivities || rawActivities.length === 0) errorMsg = 'No new activities';
       const newActivities = cleanActivities(rawActivities);
@@ -37,6 +35,7 @@
           $activities = $activities;
         }
       });
+      updateLocalActivities(athleteId, $activities);
     } catch (error) {
       errorMsg = error;
     } finally {
