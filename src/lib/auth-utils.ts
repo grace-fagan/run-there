@@ -16,7 +16,7 @@ export const setLocalAuth = (auth: UserAuth) => {
   localStorage.setItem('userAuth', JSON.stringify(auth));
 };
 
-export const getLocalActivities = (id: string) => {
+export const getLocalActivities = (id: string): Activity[] => {
   const activitiesString = localStorage.getItem(`activities-${id}`);
   return JSON.parse(activitiesString);
 };

@@ -1,8 +1,13 @@
 <script lang="ts">
-  import { authURL } from '$lib/auth-utils';
+  import { authURL, getLocalActivities, getLocalAuth } from '$lib/auth-utils';
+  import { activities } from '$lib/store';
+  import { navigate } from 'svelte-routing/src/history';
 
   const handleLogin = () => {
-    window.location.replace(authURL);
+    const userAuth = getLocalAuth();
+    // if user already authorized, navigate to cities page
+    if (userAuth) navigate('/nyc');
+    else window.location.replace(authURL);
   };
 </script>
 

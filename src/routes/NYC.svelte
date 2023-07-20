@@ -1,6 +1,6 @@
 <script lang="ts">
   import { filterByCity } from '$lib/activity-utiils';
-  import { authURL, getLocalActivities } from '$lib/auth-utils';
+  import { authURL, getLocalActivities, getLocalAuth } from '$lib/auth-utils';
   import { getPolyline } from '$lib/mapbox-utils';
   import { NYC_BOUNDS, featureToNeighborhood } from '$lib/nyc-constants';
   import { activities } from '$lib/store';
@@ -22,13 +22,12 @@
 
   const loadActivities = () => {
     if (!$activities) {
-      const userData = JSON.parse(localStorage.getItem('userAuth')) as UserAuth;
-      const athleteId = userData ? userData.id : '';
-      if (!athleteId) {
+      const userData = getLocalAuth();
+      if (!userData) {
         error = 'No athlete data found, need to reload app to give permissions again';
         return;
       }
-
+      const athleteId = userData.id;
       const localActivities = getLocalActivities(athleteId);
       if (!localActivities) {
         // TO-DO: give option to refetch data
