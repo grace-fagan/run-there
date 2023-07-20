@@ -1,5 +1,5 @@
 import type { CityBounds, Activity, LatLng } from '$types/client';
-import type { ActivityType } from '$types/stravaAPI/activity-type';
+import { ActivityType } from '$types/stravaAPI/activity-type';
 import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
 
 export const cleanActivities = (stravaActivities: StravaSummaryActivity[]): Activity[] => {
@@ -26,7 +26,9 @@ const insideCityBounds = (point: LatLng, box: CityBounds): boolean => {
 };
 
 export const filterByCity = (activities: Activity[], city: CityBounds): Activity[] => {
-  return activities.filter((f) => f.summaryPolyline && insideCityBounds(f.startLatLng, city));
+  return activities.filter((f) => {
+    f.sport === ActivityType.Run && f.summaryPolyline && insideCityBounds(f.startLatLng, city);
+  });
 };
 
 export const formatDate = (dateToFormat: Date) => {
