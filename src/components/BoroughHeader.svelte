@@ -1,14 +1,12 @@
 <script lang="ts">
   import ProgressBar from './ProgressBar.svelte';
-  import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
+  import type { ClientBorough } from '$types/neighborhoods/nyc';
+  import { getCompletedNeighborhoods } from '$lib/neighborhoods-utils';
   export let toggleVisibility: (id: number) => void = null;
   export let borough: ClientBorough;
   export let maxNeighborhoods: number;
 
   const { id, name, color, neighborhoods, runs } = borough;
-
-  const getCompletedNeighborhoods = (neighborhoods: Neighborhood[]) =>
-    neighborhoods.filter((f) => f.runs.length > 0).length;
 </script>
 
 <div

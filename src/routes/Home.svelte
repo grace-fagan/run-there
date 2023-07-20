@@ -15,7 +15,7 @@
   <div class="flex flex-col gap-1 items-center">
     <h4>{'ミᕕ( •_•)ᕗ'}</h4>
     <h1 class="font-bold text-3xl">Run There</h1>
-    <p>Keep track of neighborhoods as you run NYC.</p>
+    <p>Keep track of neighborhoods as you run NYC</p>
   </div>
   <button
     class="p-2 rounded-md hover:scale-105 transition-all bg-[#fc4c02] text-white font-semibold"
