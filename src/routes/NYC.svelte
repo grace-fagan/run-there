@@ -83,7 +83,7 @@
     <p>{error}</p>
     <Icon icon="fa-solid fa-rotate-right" onClick={() => window.location.replace(authURL)} />
   {/if}
-  <div class="content flex flex-col gap-4 md:flex-row">
+  <div class="content flex flex-col gap-2 md:gap-4 md:flex-row">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
     <InfoPanel {topNeighborhood} {neighborhoods} bind:selectedId />
   </div>

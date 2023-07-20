@@ -4,12 +4,12 @@
   export let totalNeighborhoods: number;
 </script>
 
-<div class="flex w-full justify-between items-center h-16">
+<div class="flex w-full justify-between items-center h-10 md:h-16">
   <div class="flex flex-col items-start">
-    <h1>{city}</h1>
+    <h1 class="text-3xl md:text-5xl">{city}</h1>
   </div>
   <div class="flex flex-col items-end">
-    <h2>{numCompleted} / {totalNeighborhoods}</h2>
-    <p>neighborhoods</p>
+    <h2 class="text-2xl md:text-4xl">{numCompleted} / {totalNeighborhoods}</h2>
+    <p class="text-xs md:text-auto">neighborhoods</p>
   </div>
 </div>
