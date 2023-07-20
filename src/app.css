@@ -45,6 +45,12 @@
 .content {
   height: calc(100% - 8rem);
   @media screen and (max-width: 768px) {
-    height: calc(100% - 7rem);
+    height: calc(100% - 5.5rem);
   }
+}
+
+/* remove link to mapbox from logo */
+.mapboxgl-ctrl-bottom-left a.mapboxgl-ctrl-logo {
+  pointer-events: none;
+  cursor: default;
 }

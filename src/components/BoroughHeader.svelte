@@ -12,7 +12,7 @@
 </script>
 
 <div
-  class="grid grid-cols-[25px_100px_auto] gap-3 cursor-pointer py-2 h-9"
+  class="grid grid-cols-[25px_100px_auto] gap-2 cursor-pointer p-2 h-9 hover:bg-stone-200 rounded-md"
   on:pointerdown={() => toggleVisibility && toggleVisibility(id)}
 >
   <p>{runs.length}</p>
