@@ -2,7 +2,7 @@
   import { activities } from '$lib/store';
   import { cleanActivities, formatDate } from '$lib/activity-utiils';
   import { getBatchActivities } from '$lib/api';
-  import { getValidAuth, updateLocalActivities } from '$lib/auth-utils';
+  import { getValidAuth, setLocalAuth, updateLocalActivities } from '$lib/auth-utils';
   import { writable } from 'svelte/store';
   import type { Activity } from '$types/client';
 
@@ -19,23 +19,27 @@
     timeAfter = mostRecent && new Date(mostRecent.startDate).getTime() / 1000;
   }
 
+  const addActivityToData = (activity: Activity) => {
+    if (!$activities.find((a) => a.id === activity.id)) {
+      $activities.push(activity);
+      $activities = $activities;
+    }
+  };
+
   const refreshActivities = async () => {
     fetching = true;
     try {
       const userAuth = await getValidAuth();
+      setLocalAuth(userAuth);
       const accessToken = userAuth.accessToken;
       const athleteId = userAuth.id;
       const rawActivities = await getBatchActivities(accessToken, totalFetched, timeAfter);
       const newActivities = cleanActivities(rawActivities);
       console.log({ newActivities });
-      newActivities.forEach((newA) => {
-        if (!$activities.find((a) => a.id === newA.id)) {
-          console.log('adding a new activity');
-          $activities.push(newA);
-          $activities = $activities;
-        }
-      });
-      updateLocalActivities(athleteId, $activities);
+      if (!$activities) $activities = newActivities;
+      else newActivities.forEach((newA) => addActivityToData(newA));
+      if (athleteId) updateLocalActivities(athleteId, $activities);
+      else throw new Error('Authorization Error - try again');
       hasFetched = true;
       setTimeout(() => (hasFetched = false), 2000);
     } catch (error) {

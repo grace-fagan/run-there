@@ -4,6 +4,7 @@
     getLocalActivities,
     getValidAuth,
     scope,
+    setLocalAuth,
     updateLocalActivities
   } from '$lib/auth-utils';
   import { getBatchActivities } from '$lib/api';
@@ -38,6 +39,7 @@
 
     try {
       userAuth = await getValidAuth(stravaAuthCode);
+      setLocalAuth(userAuth);
     } catch (error) {
       errorMsg = error.message;
     }
@@ -48,8 +50,6 @@
       // TO-DO: support multiple users
       accessToken = userAuth.accessToken;
       athleteId = userAuth.id;
-      console.log('setting to local storage: ', userAuth);
-      localStorage.setItem('userAuth', JSON.stringify(userAuth));
 
       // fetch activity data
       const localActivities = getLocalActivities(athleteId);
