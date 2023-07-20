@@ -21054,7 +21054,7 @@
       "id": 166,
       "properties": {
         "neighborhood": "Kingsbridge",
-        "boroughCode": "1",
+        "boroughCode": "2",
         "borough": "Bronx",
         "@id": "http://nyc.pediacities.com/Resource/Neighborhood/Kingsbridge",
         "neighbors": [96, 105, 179, 209, 253, 272, 288, 291]
