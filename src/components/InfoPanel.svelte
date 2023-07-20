@@ -16,12 +16,13 @@
   $: maxNeighborhoods = boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
   $: selectedBorough = selectedNeighborhood ? getBorough(selectedNeighborhood.borough) : null;
 
-  const boroughs = loadBoroughData(neighborhoods);
-  let visibility = new Map<number, boolean>(
-    boroughs.map((b) => {
-      const visible = selectedNeighborhood?.borough === b.id;
-      return [b.id, visible];
-    })
+  $: boroughs = loadBoroughData(neighborhoods);
+  $: visibility = new Map<number, boolean>(
+    boroughs &&
+      boroughs.map((b) => {
+        const visible = selectedNeighborhood?.borough === b.id;
+        return [b.id, visible];
+      })
   );
 
   const getBorough = (id: number) => boroughs.find((b) => b.id === id);
@@ -44,7 +45,7 @@
       watchSelectedNeighborhood(prevSelectedNeighborhood, selectedNeighborhood);
       prevSelectedNeighborhood = selectedNeighborhood;
       await tick();
-      if (selectedNeighborhood && !$isMobile) {
+      if (selectedNeighborhood) {
         const toScroll = document.getElementById(selectedNeighborhood.id.toString());
         toScroll &&
           toScroll.scrollIntoView({

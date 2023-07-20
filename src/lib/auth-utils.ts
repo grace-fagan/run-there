@@ -34,7 +34,6 @@ export const getValidAuth = async (authCode?: string) => {
     if (!localAuth) {
       console.log('no local auth, need to get user from scratch');
       if (!authCode) window.location.replace(authURL);
-      console.log('have auth code, need to get access token');
       newAuth = await getUserAuth(authCode, 'authorization_code');
       // if user exists but access token has expired (convert seconds to milliseconds)
     } else if (localAuth.expiresAt * 1000 < now) {
