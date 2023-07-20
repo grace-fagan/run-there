@@ -72,8 +72,8 @@
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
     <div class="flex flex-col md: gap-2 py-2 md:py-4">
-      <p>Your top borough: <span class="font-semibold">{boroughs[0].name}</span></p>
-      <p>Your top neighborhood: <span class="font-semibold">{topNeighborhood}</span></p>
+      <p>Top borough: <span class="font-semibold">{boroughs[0].name}</span></p>
+      <p>Top neighborhood: <span class="font-semibold">{topNeighborhood}</span></p>
     </div>
     <div
       class="grid grid-cols-[25px_100px_auto] gap-3 md:mt-2 border-b border-stone-200 text-stone-400"

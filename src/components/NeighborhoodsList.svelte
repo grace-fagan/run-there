@@ -1,16 +1,21 @@
 <script lang="ts">
   import type { Neighborhood } from '$types/neighborhoods/nyc';
   import { isMobile } from '$lib/store';
+  import { getCompletedNeighborhoods } from '$lib/neighborhoods-utils';
 
   export let selectedId: number;
   export let neighborhoods: Neighborhood[];
   const toggleNeighborhood = (id: number) => (selectedId = selectedId === id ? null : id);
+  $: percentComplete = Math.round(
+    (getCompletedNeighborhoods(neighborhoods) / neighborhoods.length) * 100
+  );
 </script>
 
 <div
   class="flex flex-col gap-2 overflow-scroll py-2 px-4 bg-white rounded-md"
   style="height: {$isMobile ? 'calc(100% - 2.25rem)' : 'auto'}"
 >
+  <p class="text-stone-400">{percentComplete}% complete</p>
   {#each neighborhoods as n}
     <div
       class="flex gap-2 items-center cursor-pointer"

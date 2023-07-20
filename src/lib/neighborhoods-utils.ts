@@ -148,4 +148,7 @@ export const getMaxValLength = (map: Map<number, string[]>) => {
   return maxLength;
 };
 
+export const getCompletedNeighborhoods = (neighborhoods: Neighborhood[]) =>
+  neighborhoods.filter((f) => f.runs.length > 0).length;
+
 export const getFeatureCenter = (polygon: Polygon) => center(polygon).geometry.coordinates;
