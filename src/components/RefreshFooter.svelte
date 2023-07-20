@@ -6,13 +6,14 @@
   import { writable } from 'svelte/store';
   import type { Activity } from '$types/client';
 
-  const totalFetched = writable(0);
+  export let numActivities: number;
 
   let fetching = false;
   let hasFetched = false;
   let errorMsg = '';
   let mostRecent: Activity = null;
   let timeAfter: number = null;
+  const totalFetched = writable(0);
 
   $: if ($activities && $activities.length > 0) {
     mostRecent = $activities[$activities.length - 1];
@@ -58,10 +59,13 @@
       }  ${fetching ? 'fa-spin' : ''}`}
     />
   </div>
-  {#if mostRecent}
-    <p class="secondary">Latest activity: {formatDate(mostRecent.startDate)}</p>
-  {/if}
+  <p class="secondary">
+    {#if mostRecent}
+      <span>Latest activity: {formatDate(mostRecent.startDate)},</span>
+    {/if}
+    <span>{numActivities} activities</span>
+  </p>
   {#if errorMsg}
-    <p class="text-xs error">{errorMsg}</p>
+    <p class="secondary error">{errorMsg}</p>
   {/if}
 </div>

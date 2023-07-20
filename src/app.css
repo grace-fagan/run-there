@@ -48,3 +48,9 @@
     height: calc(100% - 7rem);
   }
 }
+
+/* remove link to mapbox from logo */
+.mapboxgl-ctrl-bottom-left a.mapboxgl-ctrl-logo {
+  pointer-events: none;
+  cursor: default;
+}
