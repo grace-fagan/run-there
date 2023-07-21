@@ -13,4 +13,4 @@
 
 ---
 
-<img width="1136" alt="image" src="https://github.com/grace-fagan/run-there/assets/95446735/f4c39686-a4d4-49c8-89c2-6b06dcd16d9f">
+<img width="1136" alt="image" src="/static/example.png">
