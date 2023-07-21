@@ -13,4 +13,4 @@
 
 ---
 
-<img width="1136" alt="image" src="/static/example.png">
+<img width="1029" alt="example" src="https://github.com/grace-fagan/run-there/assets/95446735/28ada32c-c689-4c4f-b2a3-988c0474ea43">
