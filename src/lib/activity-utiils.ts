@@ -27,7 +27,9 @@ const insideCityBounds = (point: LatLng, box: CityBounds): boolean => {
 
 export const filterByCity = (activities: Activity[], city: CityBounds): Activity[] => {
   return activities.filter((f) => {
-    f.sport === ActivityType.Run && f.summaryPolyline && insideCityBounds(f.startLatLng, city);
+    return (
+      f.sport === ActivityType.Run && f.summaryPolyline && insideCityBounds(f.startLatLng, city)
+    );
   });
 };
 

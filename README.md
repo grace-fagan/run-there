@@ -4,7 +4,7 @@
 
 ### Data
 
-- [NYC Neighborhoods](https://data.cityofnewyork.us/City-Government/2010-Neighborhood-Tabulation-Areas-NTAs-/cpf4-rkhq)
+- [NYC Neighborhoods](https://data.beta.nyc/dataset/pediacities-nyc-neighborhoods)
 
 ### Docs
 
