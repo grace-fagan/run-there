@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { activities, athleteId } from '$lib/store';
+  import { activities, athleteId, isMobile } from '$lib/store';
   import { cleanActivities, formatDate } from '$lib/activity-utiils';
   import { getBatchActivities } from '$lib/api';
   import { getValidAuth, setLocalAuth, updateLocalActivities } from '$lib/auth-utils';
   import { writable } from 'svelte/store';
   import type { Activity } from '$types/client';
+  import ViewOnStrava from './ViewOnStrava.svelte';
 
   export let numActivities: number;
 
@@ -64,6 +65,9 @@
       <span>Latest activity: {formatDate(mostRecent.startDate)},</span>
     {/if}
     <span>{numActivities} activities</span>
+    {#if !$isMobile}
+      <span>(<ViewOnStrava />)</span>
+    {/if}
   </p>
   {#if errorMsg}
     <p class="secondary error">{errorMsg}</p>

@@ -13,7 +13,7 @@
     toggleRoutes,
     unhoverFeature
   } from '$lib/mapbox-utils';
-  import { afterUpdate, onMount, tick } from 'svelte';
+  import { afterUpdate, onMount } from 'svelte';
   import type { Feature, FeatureCollection } from 'geojson';
   import { NYC_CENTER } from '$lib/nyc-constants';
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
@@ -26,6 +26,7 @@
   export let selectedId: number = null;
 
   let basemap: MapboxMap = null;
+  let mapHeight: number = null;
   let mapLoaded = false;
   let hoveredFeat: Feature = null;
   let visibleFeat: Feature = null;
@@ -35,6 +36,8 @@
   $: selectedFeat = data.features.find((f) => f.id === selectedId) as Feature;
   $: visibleFeat = hoveredFeat || selectedFeat;
   $: showAllRoutes = !selectedFeat;
+
+  $: if (mapHeight && basemap) basemap.resize();
 
   $: if (mapLoaded && basemap && routes) {
     addRoutesToMap(basemap, routes);
@@ -106,8 +109,8 @@
   });
 </script>
 
-<div class="relative grow md:h-full">
-  <div id="map" class="w-full h-full" />
+<div class="relative grow h-full">
+  <div id="map" class="w-full h-full" bind:clientHeight={mapHeight} />
   {#if visibleFeat}
     <Tag feature={visibleFeat} />
   {/if}

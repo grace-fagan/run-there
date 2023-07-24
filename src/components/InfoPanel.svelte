@@ -5,6 +5,7 @@
   import { isMobile } from '$lib/store';
   import NeighborhoodsList from './NeighborhoodsList.svelte';
   import BoroughHeader from './BoroughHeader.svelte';
+  import Modal from './Modal.svelte';
 
   export let topNeighborhood: string;
   export let neighborhoods: Neighborhood[];
@@ -15,6 +16,7 @@
   $: selectedNeighborhood = selectedId ? neighborhoods.find((n) => n.id === selectedId) : null;
   $: maxNeighborhoods = boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
   $: selectedBorough = selectedNeighborhood ? getBorough(selectedNeighborhood.borough) : null;
+  $: topBorough = boroughs[0].runs.length <= 0 ? 'n/a' : boroughs[0].name;
 
   $: boroughs = loadBoroughData(neighborhoods);
   $: visibility = new Map<number, boolean>(
@@ -56,24 +58,29 @@
       }
     }
   });
+
+  let modalOpen = false;
 </script>
 
-{#if $isMobile && selectedBorough}
-  <div class="flex w-full items-center gap-4 h-1/2">
-    <i
-      class="fa-solid fa-angle-left text-gray-400 cursor-pointer text-lg"
-      on:pointerdown={() => toggleVisibility(selectedBorough.id)}
-    />
-    <div class="h-full grow">
-      <BoroughHeader borough={selectedBorough} {maxNeighborhoods} />
-      <NeighborhoodsList neighborhoods={selectedBorough.neighborhoods} bind:selectedId />
+{#if $isMobile}
+  <Modal isOpen={modalOpen}>
+    <div class="flex items-center gap-2 h-12" on:pointerdown={() => (modalOpen = !modalOpen)}>
+      <i class="fa-solid fa-angle-up text-md" />
+      {#if selectedBorough}
+        <div class="grow">
+          <BoroughHeader borough={selectedBorough} {maxNeighborhoods} />
+        </div>
+      {/if}
     </div>
-  </div>
+    {#if selectedBorough}
+      <NeighborhoodsList neighborhoods={selectedBorough.neighborhoods} bind:selectedId />
+    {/if}
+  </Modal>
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
     <div class="flex flex-col md: gap-2 py-2 md:py-4">
-      <p>Top borough: <span class="font-semibold">{boroughs[0].name}</span></p>
-      <p>Top neighborhood: <span class="font-semibold">{topNeighborhood}</span></p>
+      <p>Top borough: <span class="font-semibold">{topBorough}</span></p>
+      <p>Top neighborhood: <span class="font-semibold">{topNeighborhood || 'n/a'}</span></p>
     </div>
     <div
       class="grid grid-cols-[25px_100px_auto] gap-3 md:mt-2 border-b border-stone-200 text-stone-400"
