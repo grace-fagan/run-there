@@ -3,7 +3,7 @@
   import { authURL, getLocalActivities, getLocalAuth } from '$lib/auth-utils';
   import { getPolyline } from '$lib/mapbox-utils';
   import { NYC_BOUNDS, featureToNeighborhood } from '$lib/nyc-constants';
-  import { activities } from '$lib/store';
+  import { activities, athleteId } from '$lib/store';
   import type { Activity, Route, UserAuth } from '$types/client';
   import BaseMap from '$components/BaseMap.svelte';
   import { getMaxValLength, mapNeighborhoodToRoutes, loadMapData } from '$lib/neighborhoods-utils';
@@ -27,8 +27,8 @@
         error = 'No athlete data found, need to reload app to give permissions again';
         return;
       }
-      const athleteId = userData.id;
-      const localActivities = getLocalActivities(athleteId);
+      $athleteId = userData.id;
+      const localActivities = getLocalActivities($athleteId);
       if (!localActivities) {
         // TO-DO: give option to refetch data
         error = 'No activities found. Try with a new user?';
@@ -74,7 +74,7 @@
 </script>
 
 <main
-  class="relative h-screen max-h-screen px-6 md:px-10 py-6 flex flex-col gap-4 max-w-6xl m-auto"
+  class="relative h-screen max-h-screen px-6 md:px-10 pt-6 pb-2 flex flex-col gap-4 max-w-6xl m-auto"
 >
   <CityHeader city={'NYC'} {numCompleted} {totalNeighborhoods} />
   {#if error}
@@ -87,5 +87,12 @@
   </div>
   <div class="h-4 md:h-8">
     <RefreshFooter {numActivities} />
+  </div>
+  <div class="flex justify-between">
+    <a
+      class="text-xs underline text-gray-800"
+      href={`https://www.strava.com/athletes/${$athleteId}`}>View on Strava</a
+    >
+    <img class="h-6" src="/static/img/api-horiz-gray.png" alt="Powered by Strava" />
   </div>
 </main>

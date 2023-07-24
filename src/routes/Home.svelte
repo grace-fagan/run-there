@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { authURL, getLocalActivities, getLocalAuth } from '$lib/auth-utils';
-  import { activities } from '$lib/store';
+  import { authURL, getLocalAuth } from '$lib/auth-utils';
   import { navigate } from 'svelte-routing/src/history';
 
   const handleLogin = () => {
@@ -17,8 +16,10 @@
     <h1 class="font-bold text-3xl">Run There</h1>
     <p>Keep track of neighborhoods as you run NYC</p>
   </div>
-  <button
-    class="p-2 rounded-md hover:scale-105 transition-all bg-[#fc4c02] text-white font-semibold"
-    on:click={handleLogin}>Connect to Strava</button
-  >
+  <img
+    src="/static/img/connect-button.png"
+    alt="Connect with Strava"
+    class="cursor-pointer rounded-md hover:scale-105 transition-all h-12"
+    on:pointerdown={handleLogin}
+  />
 </main>

@@ -10,7 +10,7 @@
   import { getBatchActivities } from '$lib/api';
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
-  import { activities } from '$lib/store';
+  import { activities, athleteId } from '$lib/store';
   import { cleanActivities } from '$lib/activity-utiils';
   import { writable } from 'svelte/store';
   import type { UserAuth } from '$types/client';
@@ -20,7 +20,6 @@
   const stravaAuthCode = queryParams.get('code');
 
   let accessToken = '';
-  let athleteId = '';
   let userAuth: UserAuth;
 
   let errorMsg = '';
@@ -49,10 +48,10 @@
     } else if (userAuth) {
       // TO-DO: support multiple users
       accessToken = userAuth.accessToken;
-      athleteId = userAuth.id;
+      $athleteId = userAuth.id;
 
       // fetch activity data
-      const localActivities = getLocalActivities(athleteId);
+      const localActivities = getLocalActivities($athleteId);
       if (accessToken && !localActivities) {
         try {
           fetchingActivities = true;
@@ -60,7 +59,7 @@
           if (!rawActivities) throw new Error('No activity data found.');
           const cleanedActivities = cleanActivities(rawActivities);
           $activities = cleanedActivities;
-          updateLocalActivities(athleteId, cleanedActivities);
+          updateLocalActivities($athleteId, cleanedActivities);
         } catch (error) {
           //TO-DO: error handling
           console.error(error);

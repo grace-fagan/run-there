@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { activities } from '$lib/store';
+  import { activities, athleteId } from '$lib/store';
   import { cleanActivities, formatDate } from '$lib/activity-utiils';
   import { getBatchActivities } from '$lib/api';
   import { getValidAuth, setLocalAuth, updateLocalActivities } from '$lib/auth-utils';
@@ -33,13 +33,13 @@
       const userAuth = await getValidAuth();
       setLocalAuth(userAuth);
       const accessToken = userAuth.accessToken;
-      const athleteId = userAuth.id;
+      if (!$athleteId) $athleteId = userAuth.id;
       const rawActivities = await getBatchActivities(accessToken, totalFetched, timeAfter);
       const newActivities = cleanActivities(rawActivities);
       console.log({ newActivities });
       if (!$activities) $activities = newActivities;
       else newActivities.forEach((newA) => addActivityToData(newA));
-      if (athleteId) updateLocalActivities(athleteId, $activities);
+      if ($athleteId) updateLocalActivities($athleteId, $activities);
       else throw new Error('Authorization Error - try again');
       hasFetched = true;
       setTimeout(() => (hasFetched = false), 2000);
