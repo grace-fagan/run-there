@@ -19,6 +19,7 @@
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
   import type { Route } from '$types/client';
   import Tag from './Tag.svelte';
+  import { isMobile } from '$lib/store';
 
   export let routes: Route[];
   export let data: FeatureCollection;
@@ -94,8 +95,10 @@
       const neighborhoodsLayer = addNeighborhoodsToMap(basemap, data, maxNumRoutes);
       addSelectedLayerToMap(basemap, NEIGHBORHOODS_SRC);
 
-      basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
-      basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
+      if (!$isMobile) {
+        basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
+        basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
+      }
       basemap.on('click', neighborhoodsLayer, handleClick);
     });
   });

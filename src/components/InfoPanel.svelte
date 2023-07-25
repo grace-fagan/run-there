@@ -60,11 +60,17 @@
   });
 
   let modalOpen = false;
+  const toggleModal = () => (modalOpen = !modalOpen);
 </script>
 
 {#if $isMobile}
-  <Modal isOpen={modalOpen}>
-    <div class="flex items-center gap-2 h-12" on:pointerdown={() => (modalOpen = !modalOpen)}>
+  <Modal bind:isOpen={modalOpen}>
+    <div
+      class="flex items-center gap-2 h-12"
+      on:click={toggleModal}
+      on:keydown={toggleModal}
+      role="none"
+    >
       <i class="fa-solid fa-angle-up text-md" />
       {#if selectedBorough}
         <div class="grow">

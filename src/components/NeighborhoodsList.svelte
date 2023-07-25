@@ -16,11 +16,14 @@
   style="height: {$isMobile ? 'calc(100% - 2.25rem)' : 'auto'}"
 >
   <p class="text-stone-400">{percentComplete}% complete</p>
-  {#each neighborhoods as n}
+  {#each neighborhoods as n, i}
     <div
       class="flex gap-2 items-center cursor-pointer"
       id={n.id.toString()}
-      on:pointerdown={() => toggleNeighborhood(n.id)}
+      on:click={() => toggleNeighborhood(n.id)}
+      on:keydown={() => toggleNeighborhood(n.id)}
+      role="tab"
+      tabindex={i}
     >
       <i class={`fa-solid fa-check text-md ${n.runs.length > 0 ? 'text-black' : 'text-white'}`} />
       <p class={`${selectedId === n.id ? 'font-bold' : 'font-normal'}`}>

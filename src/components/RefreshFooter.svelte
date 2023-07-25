@@ -53,13 +53,13 @@
 </script>
 
 <div class="flex gap-2">
-  <div class="flex gap-2 items-center cursor-pointer" on:pointerdown={refreshActivities}>
+  <button class="flex gap-2 items-center cursor-pointer" on:click={refreshActivities}>
     <i
       class={`fa-solid text-black ${
         hasFetched ? 'fa-check' : 'fa-rotate-right hover:scale-110 transition-all'
       }  ${fetching ? 'fa-spin' : ''}`}
     />
-  </div>
+  </button>
   <p class="secondary">
     {#if mostRecent}
       <span>Latest activity: {formatDate(mostRecent.startDate)},</span>

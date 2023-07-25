@@ -12,10 +12,11 @@
   };
 </script>
 
-<img
-  src="/static/img/connect-button.png"
-  alt="Connect with Strava"
-  class="cursor-pointer rounded-md hover:scale-105 transition-all"
-  style="height: {height}px"
-  on:pointerdown={handleLogin}
-/>
+<button on:click={handleLogin}>
+  <img
+    src="/static/img/connect-button.png"
+    alt="Connect with Strava"
+    class="cursor-pointer rounded-md hover:scale-105 transition-all"
+    style="height: {height}px"
+  />
+</button>
