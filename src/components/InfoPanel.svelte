@@ -7,16 +7,17 @@
   import BoroughHeader from './BoroughHeader.svelte';
   import Modal from './Modal.svelte';
   import ProgressBar from './ProgressBar.svelte';
+  import Footer from './Footer.svelte';
 
   export let topNeighborhood: string;
   export let neighborhoods: Neighborhood[];
   export let selectedId: number;
-  export let numCompleted: number;
-  export let totalNeighborhoods: number;
+  export let numActivities: number;
+  export let selectedBorough: ClientBorough;
 
-  let selectedBorough: ClientBorough = null;
   let prevSelectedNeighborhood: Neighborhood = null;
-  $: selectedNeighborhood = selectedId ? neighborhoods.find((n) => n.id === selectedId) : null;
+  $: selectedNeighborhood =
+    selectedId !== null ? neighborhoods.find((n) => n.id === selectedId) : null;
   $: maxNeighborhoods = boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
   $: selectedBorough = selectedNeighborhood ? getBorough(selectedNeighborhood.borough) : null;
   $: topBorough = boroughs[0].runs.length <= 0 ? 'n/a' : boroughs[0].name;
@@ -39,8 +40,10 @@
   };
 
   const toggleBorough = (id: number) => {
-    selectedBorough = getBorough(id);
-    if (!selectedBorough) selectedId = null;
+    if (selectedBorough && selectedBorough.id === id) {
+      selectedBorough = null;
+      selectedId = null;
+    } else selectedBorough = getBorough(id);
   };
 
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
@@ -71,10 +74,10 @@
 </script>
 
 {#if $isMobile}
-  <Modal bind:isOpen={modalOpen} edgeInView={68}>
+  <Modal bind:isOpen={modalOpen} edgeInView={64}>
     <div class="flex flex-col h-full">
       <div
-        class="flex flex-col pb-2 h-16 border-b border-stone-200 px-4"
+        class="flex flex-col pb-2 border-b border-stone-200 px-4"
         on:click={toggleModal}
         on:keydown={toggleModal}
         role="none"
@@ -85,30 +88,24 @@
           />
         </div>
         <div class="flex items-center gap-2">
-          <button
-            class={`fa-solid fa-arrow-left ${
-              selectedBorough ? 'text-stone-400' : 'text-white'
-            } text-md`}
-            on:click={(e) => {
-              e.stopPropagation();
-              toggleBorough(null);
-            }}
-          />
+          {#if selectedBorough}
+            <button
+              class="fa-solid fa-arrow-left text-stone-400 text-md"
+              on:click={(e) => {
+                e.stopPropagation();
+                toggleBorough(null);
+              }}
+            />
+          {/if}
 
           <div class="grow">
             {#if selectedBorough}
               <BoroughHeader borough={selectedBorough} {maxNeighborhoods} showActivities={false} />
             {:else}
-              <div
-                class="grid grid-cols-[100px_auto] gap-2 cursor-pointer p-2 h-9 md:hover:bg-stone-200 rounded-md"
-              >
-                <p class="font-semibold">NYC</p>
-                <ProgressBar
-                  completed={numCompleted}
-                  color={'#000000'}
-                  total={totalNeighborhoods}
-                  maxTotal={totalNeighborhoods}
-                />
+              <div class="h-9 flex items-center">
+                <p>
+                  Top neighborhood: <span class="font-semibold">{topNeighborhood || 'n/a'}</span>
+                </p>
               </div>
             {/if}
           </div>
@@ -128,6 +125,9 @@
           {/each}
         </div>
       {/if}
+    </div>
+    <div class="py-4 px-4">
+      <Footer {numActivities} />
     </div>
   </Modal>
 {:else}

@@ -13,12 +13,14 @@
   import CityHeader from '$components/CityHeader.svelte';
   import ConnectWithStrava from '$components/ConnectWithStrava.svelte';
   import Footer from '$components/Footer.svelte';
+  import type { ClientBorough } from '$types/neighborhoods/nyc';
 
   let error = '';
   let filteredActivities: Activity[] = $activities;
   let numActivities = 0;
   let routes: Route[] = [];
   let selectedId: number = null;
+  let selectedBorough: ClientBorough = null;
   let showConnectStrava = false;
 
   const loadActivities = () => {
@@ -93,12 +95,18 @@
   </div>
 
   <div class="content flex flex-col gap-2 md:gap-4 md:flex-row">
-    <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
+    <BaseMap
+      {routes}
+      data={neighborhoodsMapData}
+      {maxNumRoutes}
+      bind:selectedBorough
+      bind:selectedId
+    />
     <InfoPanel
       {topNeighborhood}
       {neighborhoods}
-      {numCompleted}
-      {totalNeighborhoods}
+      {numActivities}
+      bind:selectedBorough
       bind:selectedId
     />
   </div>

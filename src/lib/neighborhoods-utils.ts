@@ -62,7 +62,7 @@ export const loadBoroughData = (neighborhoods: Neighborhood[]): ClientBorough[] 
         .map((id) => neighborhoodsMap.get(id))
         .sort((a, b) => b.runs.length - a.runs.length);
       // only count each run once
-      const runs = neighborhoods.reduce((prev, curr) => {
+      const runs: string[] = neighborhoods.reduce((prev, curr) => {
         curr.runs.forEach((r) => {
           if (!prev.includes(r)) prev.push(r);
         });
@@ -74,7 +74,8 @@ export const loadBoroughData = (neighborhoods: Neighborhood[]): ClientBorough[] 
         name: b.name,
         color: b.color,
         neighborhoods,
-        runs
+        runs,
+        center: b.center
       };
     })
     .sort((a, b) => b.runs.length - a.runs.length);

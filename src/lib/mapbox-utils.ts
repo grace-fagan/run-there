@@ -4,6 +4,7 @@ import type { Feature, FeatureCollection, LineString, Polygon } from 'geojson';
 import type { LatLng, Route } from '$types/client';
 import polyline from '@mapbox/polyline';
 import { getFeatureCenter } from './neighborhoods-utils';
+import type { ClientBorough } from '$types/neighborhoods/nyc';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -184,5 +185,13 @@ export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: La
   map.flyTo({
     center: n ? getFeatureCenter(n.geometry as Polygon) : [center.lng, center.lat],
     zoom: n ? 13 : 9.5
+  });
+};
+
+export const moveToBorough = (map: MapboxMap, b: ClientBorough | null, center: LatLng) => {
+  console.log('moving to borough: ', b);
+  map.flyTo({
+    center: b ? [b.center.lng, b.center.lat] : [center.lng, center.lat],
+    zoom: b ? 11 : 9.5
   });
 };

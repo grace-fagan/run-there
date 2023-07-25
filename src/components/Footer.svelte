@@ -5,7 +5,9 @@
   export let numActivities: number;
 </script>
 
-<div class="flex flex-col md:flex-row md:justify-between justify-start h-8 md:items-center">
+<div
+  class="flex flex-col gap-2 md:gap-0 md:flex-row md:justify-between justify-start h-8 md:items-center"
+>
   <RefreshFooter {numActivities} />
   <div class="flex justify-between">
     {#if $isMobile}
