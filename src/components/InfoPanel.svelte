@@ -6,10 +6,13 @@
   import NeighborhoodsList from './NeighborhoodsList.svelte';
   import BoroughHeader from './BoroughHeader.svelte';
   import Modal from './Modal.svelte';
+  import ProgressBar from './ProgressBar.svelte';
 
   export let topNeighborhood: string;
   export let neighborhoods: Neighborhood[];
   export let selectedId: number;
+  export let numCompleted: number;
+  export let totalNeighborhoods: number;
 
   let selectedBorough: ClientBorough = null;
   let prevSelectedNeighborhood: Neighborhood = null;
@@ -32,7 +35,11 @@
   const toggleVisibility = (id: number) => {
     const visible = visibility.get(id);
     visibility = visibility.set(id, !visible);
-    selectedBorough = visible ? null : getBorough(id);
+    toggleBorough(id);
+  };
+
+  const toggleBorough = (id: number) => {
+    selectedBorough = getBorough(id);
     if (!selectedBorough) selectedId = null;
   };
 
@@ -64,23 +71,64 @@
 </script>
 
 {#if $isMobile}
-  <Modal bind:isOpen={modalOpen}>
-    <div
-      class="flex items-center gap-2 h-12"
-      on:click={toggleModal}
-      on:keydown={toggleModal}
-      role="none"
-    >
-      <i class="fa-solid fa-angle-up text-md" />
+  <Modal bind:isOpen={modalOpen} edgeInView={68}>
+    <div class="flex flex-col h-full">
+      <div
+        class="flex flex-col pb-2 h-16 border-b border-stone-200 px-4"
+        on:click={toggleModal}
+        on:keydown={toggleModal}
+        role="none"
+      >
+        <div class="w-full flex justify-center">
+          <button
+            class={`fa-solid ${modalOpen ? 'fa-angle-down' : 'fa-angle-up'} text-md text-stone-400`}
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            class={`fa-solid fa-arrow-left ${
+              selectedBorough ? 'text-stone-400' : 'text-white'
+            } text-md`}
+            on:click={(e) => {
+              e.stopPropagation();
+              toggleBorough(null);
+            }}
+          />
+
+          <div class="grow">
+            {#if selectedBorough}
+              <BoroughHeader borough={selectedBorough} {maxNeighborhoods} showActivities={false} />
+            {:else}
+              <div
+                class="grid grid-cols-[100px_auto] gap-2 cursor-pointer p-2 h-9 md:hover:bg-stone-200 rounded-md"
+              >
+                <p class="font-semibold">NYC</p>
+                <ProgressBar
+                  completed={numCompleted}
+                  color={'#000000'}
+                  total={totalNeighborhoods}
+                  maxTotal={totalNeighborhoods}
+                />
+              </div>
+            {/if}
+          </div>
+        </div>
+      </div>
       {#if selectedBorough}
-        <div class="grow">
-          <BoroughHeader borough={selectedBorough} {maxNeighborhoods} />
+        <NeighborhoodsList
+          neighborhoods={selectedBorough.neighborhoods}
+          numActivities={selectedBorough.runs.length}
+          showActivities={true}
+          bind:selectedId
+        />
+      {:else}
+        <div class="grow flex flex-col gap-2 px-4 pt-2 justify-around">
+          {#each boroughs as borough}
+            <BoroughHeader {borough} handler={toggleBorough} {maxNeighborhoods} />
+          {/each}
         </div>
       {/if}
     </div>
-    {#if selectedBorough}
-      <NeighborhoodsList neighborhoods={selectedBorough.neighborhoods} bind:selectedId />
-    {/if}
   </Modal>
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
@@ -95,9 +143,13 @@
       <p>Neighborhoods</p>
     </div>
     {#each boroughs as borough}
-      <BoroughHeader {borough} {toggleVisibility} {maxNeighborhoods} />
+      <BoroughHeader {borough} handler={toggleVisibility} {maxNeighborhoods} />
       {#if !$isMobile && visibility.get(borough.id)}
-        <NeighborhoodsList neighborhoods={borough.neighborhoods} bind:selectedId />
+        <NeighborhoodsList
+          neighborhoods={borough.neighborhoods}
+          numActivities={borough.runs.length}
+          bind:selectedId
+        />
       {/if}
     {/each}
   </div>

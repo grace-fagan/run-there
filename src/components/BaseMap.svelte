@@ -58,8 +58,10 @@
   }
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
-    unhoverFeature(basemap, oldVal);
-    hoverFeature(basemap, newVal);
+    if (mapLoaded) {
+      unhoverFeature(basemap, oldVal);
+      hoverFeature(basemap, newVal);
+    }
   };
 
   const handleMousemove = (e: MapMouseEvent) => {

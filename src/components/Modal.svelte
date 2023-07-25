@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import Portal from './utils/Portal.svelte';
   export let isOpen = false;
+  export let edgeInView: number = 48;
 
   let screenHeight: number = null;
-  const edgeInView = 48;
   $: openPosition = screenHeight / 2;
   $: closedPosition = screenHeight - edgeInView;
 
@@ -21,10 +22,11 @@
       on:click={handleClick}
       on:keydown={handleClick}
       role="none"
+      in:fade
     />
   {/if}
   <div
-    class="fixed top-full left-0 w-full bg-white rounded-t-xl px-4 py-2 z-10 transition-all h-1/2 z-50"
+    class="fixed top-full left-0 w-full bg-white rounded-t-xl z-10 py-2 transition-all h-1/2 z-50 shadow-md"
     style="top: {isOpen ? openPosition : closedPosition}px"
   >
     <slot />

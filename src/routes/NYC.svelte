@@ -94,7 +94,13 @@
 
   <div class="content flex flex-col gap-2 md:gap-4 md:flex-row">
     <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} bind:selectedId />
-    <InfoPanel {topNeighborhood} {neighborhoods} bind:selectedId />
+    <InfoPanel
+      {topNeighborhood}
+      {neighborhoods}
+      {numCompleted}
+      {totalNeighborhoods}
+      bind:selectedId
+    />
   </div>
   {#if $isMobile}<p>Mobile</p>{:else}
     <Footer {numActivities} />
