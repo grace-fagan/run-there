@@ -90,8 +90,32 @@
       </div>
     {/if}
     {#if fetchingActivities}
-      <p>Fetching activities...</p>
-      <p>there are {$totalActivitiesFetched}</p>
+      <h4>{'ミᕕ( •_•)ᕗ'}</h4>
+      <h4>
+        Getting your activities
+        <span class="loader__dot">.</span><span class="loader__dot">.</span><span
+          class="loader__dot">.</span
+        >
+      </h4>
+
+      <p>{$totalActivitiesFetched}</p>
     {/if}
   </div>
 </main>
+
+<style>
+  @keyframes blink {
+    50% {
+      color: transparent;
+    }
+  }
+  .loader__dot {
+    animation: 1s blink infinite;
+  }
+  .loader__dot:nth-child(2) {
+    animation-delay: 250ms;
+  }
+  .loader__dot:nth-child(3) {
+    animation-delay: 500ms;
+  }
+</style>

@@ -15,9 +15,11 @@
   export let selectedNeighborhood: Neighborhood;
   export let selectedBorough: ClientBorough;
 
+  let modalOpen = false;
   let prevSelectedNeighborhood: Neighborhood = null;
   $: maxNeighborhoods = $boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
   $: topBorough = $boroughs[0].runs.length <= 0 ? 'n/a' : $boroughs[0].name;
+  $: enableScrolling = $isMobile ? modalOpen : true;
 
   $: visibility = new Map<number, boolean>(
     $boroughs.map((b) => {
@@ -46,7 +48,7 @@
       watchSelectedNeighborhood(prevSelectedNeighborhood, selectedNeighborhood);
       prevSelectedNeighborhood = selectedNeighborhood;
       await tick();
-      if (selectedNeighborhood && !$isMobile) {
+      if (selectedNeighborhood && enableScrolling) {
         const toScroll = document.getElementById(selectedNeighborhood.id.toString());
         toScroll &&
           toScroll.scrollIntoView({
@@ -66,6 +68,7 @@
     {maxNeighborhoods}
     {numActivities}
     bind:selectedId
+    bind:modalOpen
   />
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">

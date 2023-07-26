@@ -5,8 +5,10 @@
   export let edgeInView: number = 48;
 
   let screenHeight: number = null;
+  let modalElement: HTMLElement = null;
   $: openPosition = screenHeight - screenHeight / 3;
   $: closedPosition = screenHeight - edgeInView;
+  $: if (!isOpen && modalElement) modalElement.scroll(0, 0);
 
   const handleClick = (e: MouseEvent | KeyboardEvent) => {
     isOpen = false;
@@ -30,6 +32,7 @@
     style="top: {isOpen ? openPosition : closedPosition}px; overflow: {isOpen
       ? 'scroll'
       : 'hidden'}"
+    bind:this={modalElement}
   >
     <slot />
   </div>

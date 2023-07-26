@@ -10,8 +10,8 @@
   export let maxNeighborhoods: number;
   export let numActivities: number;
   export let selectedId: number;
+  export let modalOpen = false;
 
-  let modalOpen = false;
   const toggleModal = () => (modalOpen = !modalOpen);
 </script>
 
