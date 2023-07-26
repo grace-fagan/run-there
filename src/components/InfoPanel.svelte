@@ -32,6 +32,7 @@
       selectedBorough = null;
       selectedId = null;
     } else selectedBorough = getBoroughFromId(id);
+    if (!selectedBorough) selectedId = null;
     dispatch('selectBorough', selectedBorough);
   };
 

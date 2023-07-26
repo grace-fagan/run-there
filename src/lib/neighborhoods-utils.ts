@@ -171,6 +171,7 @@ export const getCompletedNeighborhoods = (neighborhoods: Neighborhood[]) =>
 export const getFeatureCenter = (polygon: Polygon) => center(polygon).geometry.coordinates;
 
 export const getBoroughFromId = (id: number) => {
+  if (!id) return null;
   const boroughsValue = get(boroughs);
   const borough = boroughsValue.find((b) => b.id === id);
   return borough;
