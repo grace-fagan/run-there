@@ -61,7 +61,7 @@
           $activities = cleanedActivities;
           updateLocalActivities($athleteId, cleanedActivities);
         } catch (error) {
-          //TO-DO: error handling
+          errorMsg = error;
           console.error(error);
         } finally {
           fetchingActivities = false;
