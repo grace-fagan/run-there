@@ -7,25 +7,30 @@
     createMap,
     hideFeatureRoutes,
     hoverFeature,
+    moveToBorough,
     NEIGHBORHOODS_SRC,
     selectNeighborhood,
     showFeatureRoutes,
     toggleRoutes,
     unhoverFeature
   } from '$lib/mapbox-utils';
-  import { afterUpdate, onMount, tick } from 'svelte';
+  import { afterUpdate, onMount } from 'svelte';
   import type { Feature, FeatureCollection } from 'geojson';
   import { NYC_CENTER } from '$lib/nyc-constants';
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
   import type { Route } from '$types/client';
   import Tag from './Tag.svelte';
+  import { isMobile } from '$lib/store';
+  import type { ClientBorough } from '$types/neighborhoods/nyc';
 
   export let routes: Route[];
   export let data: FeatureCollection;
   export let maxNumRoutes: number;
   export let selectedId: number = null;
+  export let selectedBorough: ClientBorough = null;
 
   let basemap: MapboxMap = null;
+  let mapHeight: number = null;
   let mapLoaded = false;
   let hoveredFeat: Feature = null;
   let visibleFeat: Feature = null;
@@ -35,6 +40,8 @@
   $: selectedFeat = data.features.find((f) => f.id === selectedId) as Feature;
   $: visibleFeat = hoveredFeat || selectedFeat;
   $: showAllRoutes = !selectedFeat;
+
+  $: if (mapHeight && basemap) basemap.resize();
 
   $: if (mapLoaded && basemap && routes) {
     addRoutesToMap(basemap, routes);
@@ -53,9 +60,13 @@
     hoverFeature(basemap, selectedFeat);
   }
 
+  $: if (mapLoaded && !selectedFeat) moveToBorough(basemap, selectedBorough, NYC_CENTER);
+
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
-    unhoverFeature(basemap, oldVal);
-    hoverFeature(basemap, newVal);
+    if (mapLoaded) {
+      unhoverFeature(basemap, oldVal);
+      hoverFeature(basemap, newVal);
+    }
   };
 
   const handleMousemove = (e: MapMouseEvent) => {
@@ -91,8 +102,10 @@
       const neighborhoodsLayer = addNeighborhoodsToMap(basemap, data, maxNumRoutes);
       addSelectedLayerToMap(basemap, NEIGHBORHOODS_SRC);
 
-      basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
-      basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
+      if (!$isMobile) {
+        basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
+        basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
+      }
       basemap.on('click', neighborhoodsLayer, handleClick);
     });
   });
@@ -106,8 +119,8 @@
   });
 </script>
 
-<div class="relative grow md:h-full">
-  <div id="map" class="w-full h-full" />
+<div class="relative grow h-full">
+  <div id="map" class="w-full h-full" bind:clientHeight={mapHeight} />
   {#if visibleFeat}
     <Tag feature={visibleFeat} />
   {/if}

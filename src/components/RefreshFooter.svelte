@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { activities } from '$lib/store';
+  import { activities, athleteId, isMobile } from '$lib/store';
   import { cleanActivities, formatDate } from '$lib/activity-utiils';
   import { getBatchActivities } from '$lib/api';
   import { getValidAuth, setLocalAuth, updateLocalActivities } from '$lib/auth-utils';
   import { writable } from 'svelte/store';
   import type { Activity } from '$types/client';
+  import ViewOnStrava from './ViewOnStrava.svelte';
 
   export let numActivities: number;
 
@@ -33,13 +34,13 @@
       const userAuth = await getValidAuth();
       setLocalAuth(userAuth);
       const accessToken = userAuth.accessToken;
-      const athleteId = userAuth.id;
+      if (!$athleteId) $athleteId = userAuth.id;
       const rawActivities = await getBatchActivities(accessToken, totalFetched, timeAfter);
       const newActivities = cleanActivities(rawActivities);
       console.log({ newActivities });
       if (!$activities) $activities = newActivities;
       else newActivities.forEach((newA) => addActivityToData(newA));
-      if (athleteId) updateLocalActivities(athleteId, $activities);
+      if ($athleteId) updateLocalActivities($athleteId, $activities);
       else throw new Error('Authorization Error - try again');
       hasFetched = true;
       setTimeout(() => (hasFetched = false), 2000);
@@ -52,18 +53,21 @@
 </script>
 
 <div class="flex gap-2">
-  <div class="flex gap-2 items-center cursor-pointer" on:pointerdown={refreshActivities}>
+  <button class="flex gap-2 items-center cursor-pointer" on:click={refreshActivities}>
     <i
       class={`fa-solid text-black ${
         hasFetched ? 'fa-check' : 'fa-rotate-right hover:scale-110 transition-all'
       }  ${fetching ? 'fa-spin' : ''}`}
     />
-  </div>
+  </button>
   <p class="secondary">
     {#if mostRecent}
       <span>Latest activity: {formatDate(mostRecent.startDate)},</span>
     {/if}
     <span>{numActivities} activities</span>
+    {#if !$isMobile}
+      <span>(<ViewOnStrava />)</span>
+    {/if}
   </p>
   {#if errorMsg}
     <p class="secondary error">{errorMsg}</p>

@@ -26,11 +26,56 @@ export const NYC_CENTER: LatLng = {
 };
 
 export const boroughMap = new Map<number, RawBorough>([
-  [1, { id: 1, name: 'Manhattan', color: '#76B5C3', nIds: getNeighborhoodIdsFromBorough(1) }],
-  [2, { id: 2, name: 'Bronx', color: '#E6A156', nIds: getNeighborhoodIdsFromBorough(2) }],
-  [3, { id: 3, name: 'Brooklyn', color: '#E6BC42', nIds: getNeighborhoodIdsFromBorough(3) }],
-  [4, { id: 4, name: 'Queens', color: '#E04051', nIds: getNeighborhoodIdsFromBorough(4) }],
-  [5, { id: 5, name: 'Staten Island', color: '#63BC83', nIds: getNeighborhoodIdsFromBorough(5) }]
+  [
+    1,
+    {
+      id: 1,
+      name: 'Manhattan',
+      color: '#76B5C3',
+      nIds: getNeighborhoodIdsFromBorough(1),
+      center: { lng: -73.976983, lat: 40.78091 }
+    }
+  ],
+  [
+    2,
+    {
+      id: 2,
+      name: 'Bronx',
+      color: '#E6A156',
+      nIds: getNeighborhoodIdsFromBorough(2),
+      center: { lng: -73.841141, lat: 40.851717 }
+    }
+  ],
+  [
+    3,
+    {
+      id: 3,
+      name: 'Brooklyn',
+      color: '#E6BC42',
+      nIds: getNeighborhoodIdsFromBorough(3),
+      center: { lng: -73.961849, lat: 40.655478 }
+    }
+  ],
+  [
+    4,
+    {
+      id: 4,
+      name: 'Queens',
+      color: '#E04051',
+      nIds: getNeighborhoodIdsFromBorough(4),
+      center: { lng: -73.826527, lat: 40.715127 }
+    }
+  ],
+  [
+    5,
+    {
+      id: 5,
+      name: 'Staten Island',
+      color: '#63BC83',
+      nIds: getNeighborhoodIdsFromBorough(5),
+      center: { lng: -74.146728, lat: 40.564099 }
+    }
+  ]
 ]);
 
 export const CodeToBorough = (code: number) => boroughMap.get(code);
