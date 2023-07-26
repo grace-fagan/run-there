@@ -1,27 +1,30 @@
 <script lang="ts">
   import { filterByCity } from '$lib/activity-utiils';
   import { getLocalActivities, getLocalAuth } from '$lib/auth-utils';
-  import { getPolyline } from '$lib/mapbox-utils';
   import { NYC_BOUNDS, featureToNeighborhood } from '$lib/nyc-constants';
-  import { activities, athleteId, isMobile } from '$lib/store';
-  import type { Activity, Route } from '$types/client';
+  import { activities, boroughs, athleteId, isMobile } from '$lib/store';
   import BaseMap from '$components/BaseMap.svelte';
-  import { getMaxValLength, mapNeighborhoodToRoutes, loadMapData } from '$lib/neighborhoods-utils';
+  import {
+    getMaxValLength,
+    mapNeighborhoodToRoutes,
+    loadMapData,
+    loadBoroughData,
+    getBoroughFromId,
+    getFeatIdToRoutesMap
+  } from '$lib/neighborhoods-utils';
   import type { Feature, FeatureCollection } from 'geojson';
   import NYCData from '$data/NYC.json';
   import InfoPanel from '$components/InfoPanel.svelte';
   import CityHeader from '$components/CityHeader.svelte';
   import ConnectWithStrava from '$components/ConnectWithStrava.svelte';
   import Footer from '$components/Footer.svelte';
-  import type { ClientBorough } from '$types/neighborhoods/nyc';
+  import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
 
   let error = '';
-  let filteredActivities: Activity[] = $activities;
-  let numActivities = 0;
-  let routes: Route[] = [];
   let selectedId: number = null;
-  let selectedBorough: ClientBorough = null;
   let showConnectStrava = false;
+  let selectedBorough: ClientBorough = null;
+  let selectedNeighborhood: Neighborhood = null;
 
   const loadActivities = () => {
     if (!$activities) {
@@ -43,16 +46,6 @@
     }
   };
 
-  const buildRoutes = (activities: Activity[]) => {
-    return activities.map((a) => {
-      return {
-        id: a.id,
-        lineString: getPolyline(a.summaryPolyline),
-        neighborhoods: []
-      };
-    });
-  };
-
   // get top feature by value from map data
   const getTopFeature = (data: FeatureCollection) => {
     const topFeature = data.features.reduce((top, curr) => {
@@ -65,18 +58,22 @@
 
   loadActivities();
 
-  $: if ($activities) {
-    filteredActivities = filterByCity($activities, NYC_BOUNDS);
-    numActivities = filteredActivities.length;
-    routes = buildRoutes(filteredActivities);
-  }
-  $: featToRoutes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, routes);
+  $: filteredActivities = filterByCity($activities, NYC_BOUNDS);
+  $: numActivities = filteredActivities.length;
+  $: routes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, filteredActivities);
+  $: featToRoutes = getFeatIdToRoutesMap(NYCData as FeatureCollection, routes);
   $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
   $: maxNumRoutes = getMaxValLength(featToRoutes);
   $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
+  $: $boroughs = loadBoroughData(neighborhoods);
   $: numCompleted = Array.from(featToRoutes.values()).filter((arr) => arr.length > 0).length;
   $: totalNeighborhoods = featToRoutes.size;
   $: topNeighborhood = getTopFeature(neighborhoodsMapData)?.properties.name;
+
+  $: if (selectedId) {
+    selectedNeighborhood = neighborhoods?.find((n) => n.id === selectedId);
+    selectedBorough = getBoroughFromId(selectedNeighborhood.borough);
+  }
 </script>
 
 <main
@@ -99,18 +96,19 @@
       {routes}
       data={neighborhoodsMapData}
       {maxNumRoutes}
-      bind:selectedBorough
+      {selectedBorough}
       bind:selectedId
     />
     <InfoPanel
       {topNeighborhood}
-      {neighborhoods}
       {numActivities}
-      bind:selectedBorough
+      {selectedNeighborhood}
+      {selectedBorough}
       bind:selectedId
+      on:selectBorough={(b) => (selectedBorough = b.detail)}
     />
   </div>
-  {#if $isMobile}<p>Mobile</p>{:else}
+  {#if !$isMobile}
     <Footer {numActivities} />
   {/if}
 </main>

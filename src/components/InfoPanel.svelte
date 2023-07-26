@@ -1,49 +1,38 @@
 <script lang="ts">
   import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
-  import { loadBoroughData } from '$lib/neighborhoods-utils';
+  import { getBoroughFromId } from '$lib/neighborhoods-utils';
   import { afterUpdate, tick } from 'svelte';
-  import { isMobile } from '$lib/store';
+  import { boroughs, isMobile } from '$lib/store';
   import NeighborhoodsList from './NeighborhoodsList.svelte';
   import BoroughHeader from './BoroughHeader.svelte';
   import Modal from './Modal.svelte';
-  import ProgressBar from './ProgressBar.svelte';
   import Footer from './Footer.svelte';
+  import { createEventDispatcher } from 'svelte';
 
+  const dispatch = createEventDispatcher();
   export let topNeighborhood: string;
-  export let neighborhoods: Neighborhood[];
   export let selectedId: number;
   export let numActivities: number;
+  export let selectedNeighborhood: Neighborhood;
   export let selectedBorough: ClientBorough;
 
   let prevSelectedNeighborhood: Neighborhood = null;
-  $: selectedNeighborhood =
-    selectedId !== null ? neighborhoods.find((n) => n.id === selectedId) : null;
-  $: maxNeighborhoods = boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
-  $: selectedBorough = selectedNeighborhood ? getBorough(selectedNeighborhood.borough) : null;
-  $: topBorough = boroughs[0].runs.length <= 0 ? 'n/a' : boroughs[0].name;
+  $: maxNeighborhoods = $boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
+  $: topBorough = $boroughs[0].runs.length <= 0 ? 'n/a' : $boroughs[0].name;
 
-  $: boroughs = loadBoroughData(neighborhoods);
   $: visibility = new Map<number, boolean>(
-    boroughs &&
-      boroughs.map((b) => {
-        const visible = selectedNeighborhood?.borough === b.id;
-        return [b.id, visible];
-      })
+    $boroughs.map((b) => {
+      const visible = selectedBorough?.id === b.id;
+      return [b.id, visible];
+    })
   );
-
-  const getBorough = (id: number) => boroughs.find((b) => b.id === id);
-
-  const toggleVisibility = (id: number) => {
-    const visible = visibility.get(id);
-    visibility = visibility.set(id, !visible);
-    toggleBorough(id);
-  };
 
   const toggleBorough = (id: number) => {
     if (selectedBorough && selectedBorough.id === id) {
       selectedBorough = null;
       selectedId = null;
-    } else selectedBorough = getBorough(id);
+    } else selectedBorough = getBoroughFromId(id);
+    dispatch('selectBorough', selectedBorough);
   };
 
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
@@ -57,7 +46,7 @@
       watchSelectedNeighborhood(prevSelectedNeighborhood, selectedNeighborhood);
       prevSelectedNeighborhood = selectedNeighborhood;
       await tick();
-      if (selectedNeighborhood) {
+      if (selectedNeighborhood && !$isMobile) {
         const toScroll = document.getElementById(selectedNeighborhood.id.toString());
         toScroll &&
           toScroll.scrollIntoView({
@@ -120,7 +109,7 @@
         />
       {:else}
         <div class="grow flex flex-col gap-2 px-4 pt-2 justify-around">
-          {#each boroughs as borough}
+          {#each $boroughs as borough}
             <BoroughHeader {borough} handler={toggleBorough} {maxNeighborhoods} />
           {/each}
         </div>
@@ -142,8 +131,8 @@
       <p class="col-span-2">Activities</p>
       <p>Neighborhoods</p>
     </div>
-    {#each boroughs as borough}
-      <BoroughHeader {borough} handler={toggleVisibility} {maxNeighborhoods} />
+    {#each $boroughs as borough}
+      <BoroughHeader {borough} handler={toggleBorough} {maxNeighborhoods} />
       {#if !$isMobile && visibility.get(borough.id)}
         <NeighborhoodsList
           neighborhoods={borough.neighborhoods}

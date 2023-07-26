@@ -5,8 +5,11 @@ import { CodeToBorough, boroughMap } from './nyc-constants';
 import point from 'turf-point';
 import booleanIntersects from '@turf/boolean-intersects';
 import center from '@turf/center';
-import type { Route } from '$types/client';
+import type { Activity, Route } from '$types/client';
 import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
+import { getPolyline } from './mapbox-utils';
+import { get } from 'svelte/store';
+import { boroughs } from './store';
 
 // this function cleans and adds route data to each feature in the raw data collection
 export const loadMapData = (
@@ -115,21 +118,34 @@ export const getNeighborhoodsFromRoute = (
   return checkNeighbors(featMap, route, startNeighborhood, [], []);
 };
 
-export const mapNeighborhoodToRoutes = (data: FeatureCollection, routes: Route[]) => {
+export const mapNeighborhoodToRoutes = (data: FeatureCollection, activities: Activity[]) => {
   // create map from ID to feature object
   const featureIdMap = createFeatureIdMap(data);
+
+  const routes =
+    activities &&
+    activities.map((a) => {
+      const id = a.id;
+      const lineString = getPolyline(a.summaryPolyline);
+      const neighborhoods = getNeighborhoodsFromRoute(data, featureIdMap, lineString);
+      return {
+        id: id,
+        lineString,
+        neighborhoods
+      };
+    });
+
+  return routes;
+};
+
+export const getFeatIdToRoutesMap = (data: FeatureCollection, routes: Route[]) => {
   // create empty map that will hold routes
   const featToRoutesMap = new Map<number, string[]>(data.features.map((f) => [f.id as number, []]));
-  routes.forEach((route) => {
-    if (!route) return;
-    const neighborhoods = getNeighborhoodsFromRoute(data, featureIdMap, route.lineString);
-    if (neighborhoods) {
-      // populate neighborhoods attribute of routes object
-      route.neighborhoods = neighborhoods;
-      // add route to Feature To Routes Map
-      neighborhoods.forEach((n) => featToRoutesMap.get(n).push(route.id));
-    }
-  });
+  routes &&
+    routes.map((r) => {
+      const neighborhoods = r.neighborhoods;
+      if (neighborhoods) neighborhoods.forEach((n) => featToRoutesMap.get(n).push(r.id));
+    });
   return featToRoutesMap;
 };
 
@@ -153,3 +169,9 @@ export const getCompletedNeighborhoods = (neighborhoods: Neighborhood[]) =>
   neighborhoods.filter((f) => f.runs.length > 0).length;
 
 export const getFeatureCenter = (polygon: Polygon) => center(polygon).geometry.coordinates;
+
+export const getBoroughFromId = (id: number) => {
+  const boroughsValue = get(boroughs);
+  const borough = boroughsValue.find((b) => b.id === id);
+  return borough;
+};

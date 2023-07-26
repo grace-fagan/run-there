@@ -26,7 +26,7 @@
     />
   {/if}
   <div
-    class="fixed top-full left-0 w-full bg-white rounded-t-xl z-10 py-2 transition-all h-1/2 z-50 shadow-md"
+    class="fixed top-full left-0 w-full bg-white rounded-t-xl z-10 py-2 transition-all h-1/2 z-50 shadow-lg"
     style="top: {isOpen ? openPosition : closedPosition}px; overflow: {isOpen
       ? 'scroll'
       : 'hidden'}"

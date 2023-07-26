@@ -111,6 +111,7 @@ export const addRoutesToMap = (map: MapboxMap, routes: Route[]) => {
 };
 
 export const toggleRoutes = (map: MapboxMap, routes: Route[], visible: boolean = true) => {
+  if (!routes) return;
   if (!visible) {
     routes.forEach(({ id }) => map.removeFeatureState({ source: ROUTES_SRC, id: id }));
   } else {
@@ -189,7 +190,6 @@ export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: La
 };
 
 export const moveToBorough = (map: MapboxMap, b: ClientBorough | null, center: LatLng) => {
-  console.log('moving to borough: ', b);
   map.flyTo({
     center: b ? [b.center.lng, b.center.lat] : [center.lng, center.lat],
     zoom: b ? 11 : 9.5

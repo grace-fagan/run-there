@@ -60,7 +60,7 @@
     hoverFeature(basemap, selectedFeat);
   }
 
-  $: if (mapLoaded) moveToBorough(basemap, selectedBorough, NYC_CENTER);
+  $: if (mapLoaded && !selectedFeat) moveToBorough(basemap, selectedBorough, NYC_CENTER);
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
     if (mapLoaded) {
