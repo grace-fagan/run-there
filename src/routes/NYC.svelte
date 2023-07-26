@@ -30,7 +30,6 @@
     if (!$activities) {
       const userData = getLocalAuth();
       if (!userData) {
-        error = 'No athlete data found';
         showConnectStrava = true;
         return;
       }
@@ -59,7 +58,7 @@
   loadActivities();
 
   $: filteredActivities = filterByCity($activities, NYC_BOUNDS);
-  $: numActivities = filteredActivities.length;
+  $: numActivities = filteredActivities?.length || 0;
   $: routes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, filteredActivities);
   $: featToRoutes = getFeatIdToRoutesMap(NYCData as FeatureCollection, routes);
   $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);

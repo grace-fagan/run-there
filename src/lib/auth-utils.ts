@@ -38,7 +38,9 @@ export const getValidAuth = async (authCode?: string) => {
       // if user exists but access token has expired (convert seconds to milliseconds)
     } else if (localAuth.expiresAt * 1000 < now) {
       console.log('access code expired! Getting a new one...');
-      newAuth = await getUserAuth(localAuth.refreshToken, 'refresh_token', localAuth.id);
+      const existingId = localAuth.id;
+      const newTokens = await getUserAuth(localAuth.refreshToken, 'refresh_token', localAuth.id);
+      newAuth = { ...newTokens, id: existingId };
     } else newAuth = localAuth;
     console.log({ newAuth });
   } catch (error) {

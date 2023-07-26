@@ -49,6 +49,10 @@
   }
 }
 
+.outer-shadow {
+  box-shadow: 0px -3px 5px #00000020;
+}
+
 /* remove link to mapbox from logo */
 .mapboxgl-ctrl-bottom-left a.mapboxgl-ctrl-logo {
   pointer-events: none;
