@@ -79,7 +79,7 @@
   class="relative h-screen max-h-screen px-4 md:px-10 pt-6 pb-2 flex flex-col gap-4 max-w-6xl m-auto"
 >
   <div class="flex flex-col gap-0">
-    <CityHeader city={'NYC'} {numCompleted} {totalNeighborhoods} />
+    <CityHeader city={'Chicago'} {numCompleted} {totalNeighborhoods} />
     <div class="flex w-full gap-2 items-center">
       {#if error}
         <p class="error">{error}</p>

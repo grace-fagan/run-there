@@ -13,14 +13,14 @@ const getNeighborhoodIdsFromBorough = (b: number): number[] => {
   return NYCData.features.filter((f) => Number(f.properties.boroughCode) === b).map((f) => f.id);
 };
 
-export const NYC_BOUNDS: CityBounds = {
+export const BOUNDS: CityBounds = {
   minLat: 40.5,
   minLng: -74.25,
   maxLat: 40.92,
   maxLng: -73.68
 };
 
-export const NYC_CENTER: LatLng = {
+export const CENTER: LatLng = {
   lat: 40.67232,
   lng: -73.95473
 };
