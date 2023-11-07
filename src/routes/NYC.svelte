@@ -71,8 +71,10 @@
 
   $: if (selectedId) {
     selectedNeighborhood = neighborhoods?.find((n) => n.id === selectedId);
-    selectedBorough = getBoroughFromId(selectedNeighborhood.borough);
+    selectedBorough = getBoroughFromId(selectedNeighborhood.parent);
   }
+
+  $: console.log({ $activities });
 </script>
 
 <main

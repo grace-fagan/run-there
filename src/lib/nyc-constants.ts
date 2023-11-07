@@ -1,12 +1,12 @@
 import type { CityBounds, LatLng } from '$types/client';
 import type { Neighborhood, RawBorough } from '$types/neighborhoods/nyc';
-import NYCData from '$data/NYC.json';
+import NYCData from '$data/neighborhoods/NYC.json';
 import type { Feature } from 'geojson';
 
 export const featureToNeighborhood = (n: Feature): Neighborhood => {
   const { id, name, borough, color, runs } = n.properties;
   const cleanedRuns = typeof runs === 'string' ? JSON.parse(runs) : runs;
-  return { id, name, borough, color, runs: cleanedRuns };
+  return { id, name, parent: borough, color, runs: cleanedRuns };
 };
 
 const getNeighborhoodIdsFromBorough = (b: number): number[] => {

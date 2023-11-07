@@ -20,7 +20,7 @@ export interface RawBorough {
 export interface Neighborhood {
   id: number;
   name: string;
-  borough: number;
+  parent: number;
   color: string;
   runs: string[];
 }

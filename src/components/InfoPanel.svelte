@@ -38,8 +38,8 @@
   };
 
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
-    if (oldVal) visibility = visibility.set(oldVal.borough, false);
-    if (newVal) visibility = visibility.set(newVal.borough, true);
+    if (oldVal) visibility = visibility.set(oldVal.parent, false);
+    if (newVal) visibility = visibility.set(newVal.parent, true);
   };
 
   // handles watching the selected neighborhood value and retaining its old value

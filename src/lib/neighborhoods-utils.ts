@@ -35,7 +35,7 @@ export const loadMapData = (
         featurePolygon = unionGeometry.geometry;
       }
 
-      const boroughCode = Number(feature.properties.boroughCode);
+      const parent = Number(feature.properties.boroughCode);
       const id = Number(feature.id);
 
       return {
@@ -43,8 +43,8 @@ export const loadMapData = (
         properties: {
           name: feature.properties.neighborhood as string,
           id,
-          borough: boroughCode,
-          color: CodeToBorough(boroughCode).color,
+          parent,
+          color: CodeToBorough(parent).color,
           neighbors: feature.properties.neighbors,
           runs: routesMap.get(id),
           value: routesMap.get(id).length
