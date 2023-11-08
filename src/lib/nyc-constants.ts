@@ -12,7 +12,6 @@ const getNeighborhoodIdsFromBorough = (b: number): number[] => {
   return NYCData.features.filter((f) => Number(f.properties.boroughCode) === b).map((f) => f.id);
 };
 
-export const NYC_CENTER = [-73.95473, 40.67232];
 export const boroughMap = new Map<number, RawBorough>([
   [
     1,

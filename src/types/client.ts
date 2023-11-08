@@ -24,3 +24,8 @@ export interface Route {
   lineString: LineString;
   neighborhoods: number[];
 }
+
+export interface City {
+  display: string;
+  center: Position;
+}

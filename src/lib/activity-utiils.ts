@@ -1,8 +1,6 @@
 import type { Activity } from '$types/client';
 import { ActivityType } from '$types/stravaAPI/activity-type';
 import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-import type { MultiPolygon, Polygon } from 'geojson';
 
 export const cleanActivities = (stravaActivities: StravaSummaryActivity[]): Activity[] => {
   return stravaActivities.map((a) => {
@@ -16,16 +14,6 @@ export const cleanActivities = (stravaActivities: StravaSummaryActivity[]): Acti
       // Strava gives us a [lat, lng], we are using [lng, lat]
       startLatLng: a.start_latlng.reverse()
     };
-  });
-};
-
-export const filterByCity = (activities: Activity[], city: MultiPolygon | Polygon): Activity[] => {
-  return activities?.filter((f) => {
-    return (
-      f.sport === ActivityType.Run &&
-      f.summaryPolyline &&
-      booleanPointInPolygon(f.startLatLng, city)
-    );
   });
 };
 

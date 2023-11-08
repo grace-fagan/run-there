@@ -16,11 +16,10 @@
   } from '$lib/mapbox-utils';
   import { afterUpdate, onMount } from 'svelte';
   import type { Feature, FeatureCollection } from 'geojson';
-  import { NYC_CENTER } from '$lib/nyc-constants';
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
   import type { Route } from '$types/client';
   import Tag from './Tag.svelte';
-  import { isMobile } from '$lib/store';
+  import { city, isMobile } from '$lib/store';
   import type { ClientBorough } from '$types/neighborhoods/nyc';
 
   export let routes: Route[];
@@ -56,11 +55,11 @@
 
   // runs when selectedFeat changes
   $: if (mapLoaded) {
-    selectNeighborhood(basemap, selectedFeat, NYC_CENTER);
+    selectNeighborhood(basemap, selectedFeat, $city.center);
     hoverFeature(basemap, selectedFeat);
   }
 
-  $: if (mapLoaded && !selectedFeat) moveToBorough(basemap, selectedBorough, NYC_CENTER);
+  $: if (mapLoaded && !selectedFeat) moveToBorough(basemap, selectedBorough, $city.center);
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
     if (mapLoaded) {
@@ -96,7 +95,7 @@
   };
 
   onMount(() => {
-    basemap = createMap(NYC_CENTER);
+    basemap = createMap($city.center);
     basemap.on('load', () => {
       mapLoaded = true;
       const neighborhoodsLayer = addNeighborhoodsToMap(basemap, data, maxNumRoutes);
