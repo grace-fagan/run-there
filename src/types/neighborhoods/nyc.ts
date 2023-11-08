@@ -1,4 +1,4 @@
-import type { LatLng } from '$types/client';
+import type { Position } from 'geojson';
 
 export interface ClientBorough {
   id: number;
@@ -6,7 +6,7 @@ export interface ClientBorough {
   color: string;
   neighborhoods: Neighborhood[];
   runs: string[];
-  center: LatLng;
+  center: Position;
 }
 
 export interface RawBorough {
@@ -14,7 +14,7 @@ export interface RawBorough {
   name: string;
   color: string;
   nIds: number[];
-  center: LatLng;
+  center: Position;
 }
 
 export interface Neighborhood {

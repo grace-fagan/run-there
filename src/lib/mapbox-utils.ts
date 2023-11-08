@@ -1,7 +1,7 @@
 import mapboxgl, { Map as MapboxMap } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import type { Feature, FeatureCollection, LineString, Polygon } from 'geojson';
-import type { LatLng, Route } from '$types/client';
+import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
+import type { Route } from '$types/client';
 import polyline from '@mapbox/polyline';
 import { getFeatureCenter } from './neighborhoods-utils';
 import type { ClientBorough } from '$types/neighborhoods/nyc';
@@ -14,11 +14,11 @@ export const NEIGHBORHOODS_SRC = 'neighborhoods';
 
 export const getPolyline = (summary: string): LineString => polyline.toGeoJSON(summary);
 
-export const createMap = (center: LatLng): MapboxMap => {
+export const createMap = (center: Position): MapboxMap => {
   return new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/gracefagan/cl41z1iv1001h15p8tzq6m7fy',
-    center: [center.lng, center.lat],
+    center,
     zoom: 9.5
   });
 };
@@ -181,17 +181,17 @@ export const hideFeatureRoutes = (map: MapboxMap, n: Feature) => {
   });
 };
 
-export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: LatLng) => {
+export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: Position) => {
   map.setLayoutProperty('neighborhoods-selected', 'visibility', n ? 'visible' : 'none');
   map.flyTo({
-    center: n ? getFeatureCenter(n.geometry as Polygon) : [center.lng, center.lat],
+    center: n ? getFeatureCenter(n.geometry as Polygon) : center,
     zoom: n ? 13 : 9.5
   });
 };
 
-export const moveToBorough = (map: MapboxMap, b: ClientBorough | null, center: LatLng) => {
+export const moveToBorough = (map: MapboxMap, b: ClientBorough | null, center: Position) => {
   map.flyTo({
-    center: b ? [b.center.lng, b.center.lat] : [center.lng, center.lat],
+    center: b ? b.center : center,
     zoom: b ? 11 : 9.5
   });
 };

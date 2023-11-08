@@ -1,7 +1,7 @@
 <script lang="ts">
   import { filterByCity } from '$lib/activity-utiils';
   import { getLocalActivities, getLocalAuth } from '$lib/auth-utils';
-  import { NYC_BOUNDS, featureToNeighborhood } from '$lib/nyc-constants';
+  import { featureToNeighborhood } from '$lib/nyc-constants';
   import { activities, boroughs, athleteId, isMobile } from '$lib/store';
   import BaseMap from '$components/BaseMap.svelte';
   import {
@@ -12,19 +12,21 @@
     getBoroughFromId,
     getFeatIdToRoutesMap
   } from '$lib/neighborhoods-utils';
-  import type { Feature, FeatureCollection } from 'geojson';
-  import NYCData from '$data/NYC.json';
+  import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson';
+  import NYCData from '$data/neighborhoods/NYC.json';
   import InfoPanel from '$components/InfoPanel.svelte';
   import CityHeader from '$components/CityHeader.svelte';
   import ConnectWithStrava from '$components/ConnectWithStrava.svelte';
   import Footer from '$components/Footer.svelte';
   import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
+  import cityFeature from '$data/city_boundaries/nyc.json';
 
   let error = '';
   let selectedId: number = null;
   let showConnectStrava = false;
   let selectedBorough: ClientBorough = null;
   let selectedNeighborhood: Neighborhood = null;
+  let cityPolygon = cityFeature.geometry as Polygon | MultiPolygon;
 
   const loadActivities = () => {
     if (!$activities) {
@@ -57,7 +59,7 @@
 
   loadActivities();
 
-  $: filteredActivities = filterByCity($activities, NYC_BOUNDS);
+  $: filteredActivities = filterByCity($activities, cityPolygon);
   $: numActivities = filteredActivities?.length || 0;
   $: routes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, filteredActivities);
   $: featToRoutes = getFeatIdToRoutesMap(NYCData as FeatureCollection, routes);

@@ -1,6 +1,8 @@
-import type { CityBounds, Activity, LatLng } from '$types/client';
+import type { Activity } from '$types/client';
 import { ActivityType } from '$types/stravaAPI/activity-type';
 import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import type { MultiPolygon, Polygon } from 'geojson';
 
 export const cleanActivities = (stravaActivities: StravaSummaryActivity[]): Activity[] => {
   return stravaActivities.map((a) => {
@@ -11,24 +13,18 @@ export const cleanActivities = (stravaActivities: StravaSummaryActivity[]): Acti
       summaryPolyline: a.map.summary_polyline as string,
       sport: a.type as ActivityType,
       startDate: a.start_date as Date,
-      startLatLng: {
-        lat: a.start_latlng[0],
-        lng: a.start_latlng[1]
-      } as LatLng
+      // Strava gives us a [lat, lng], we are using [lng, lat]
+      startLatLng: a.start_latlng.reverse()
     };
   });
 };
 
-const insideCityBounds = (point: LatLng, box: CityBounds): boolean => {
-  const { lat, lng } = point;
-  const { minLat, minLng, maxLat, maxLng } = box;
-  return lat && lng && lat > minLat && lat < maxLat && lng < maxLng && lng > minLng;
-};
-
-export const filterByCity = (activities: Activity[], city: CityBounds): Activity[] => {
+export const filterByCity = (activities: Activity[], city: MultiPolygon | Polygon): Activity[] => {
   return activities?.filter((f) => {
     return (
-      f.sport === ActivityType.Run && f.summaryPolyline && insideCityBounds(f.startLatLng, city)
+      f.sport === ActivityType.Run &&
+      f.summaryPolyline &&
+      booleanPointInPolygon(f.startLatLng, city)
     );
   });
 };
