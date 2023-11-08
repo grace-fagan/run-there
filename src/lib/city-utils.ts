@@ -1,4 +1,4 @@
-import type { Activity } from '$types/client';
+import type { Activity, City } from '$types/client';
 import { ActivityType } from '$types/stravaAPI/activity-type';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import type { MultiPolygon } from '@turf/helpers';
@@ -14,13 +14,18 @@ export const filterByCity = (activities: Activity[], city: MultiPolygon | Polygo
   });
 };
 
-export const cityInfo = {
+export const cityInfo: Record<string, City> = {
   nyc: {
     display: 'NYC',
-    center: [-73.95473, 40.67232]
+    center: [-73.95473, 40.67232],
+    secondary: 'borough'
   },
   sea: {
-    display: 'Seattle',
+    display: 'SEA',
     center: [-122.3320708, 47.6062095]
+  },
+  chi: {
+    display: 'CHI',
+    center: [-87.6297982, 41.8781136]
   }
 };

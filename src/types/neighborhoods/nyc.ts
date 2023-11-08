@@ -1,19 +1,11 @@
 import type { Position } from 'geojson';
 
-export interface ClientBorough {
+export interface Region {
   id: number;
   name: string;
   color: string;
   neighborhoods: Neighborhood[];
   runs: string[];
-  center: Position;
-}
-
-export interface RawBorough {
-  id: number;
-  name: string;
-  color: string;
-  nIds: number[];
   center: Position;
 }
 

@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { boroughs } from '$lib/store';
-  import type { ClientBorough } from '$types/neighborhoods/nyc';
-  import BoroughHeader from './BoroughHeader.svelte';
+  import { regions } from '$lib/store';
+  import type { Region } from '$types/neighborhoods/nyc';
+  import RegionHeader from './RegionHeader.svelte';
   import Footer from './Footer.svelte';
   import Modal from './Modal.svelte';
   import NeighborhoodsList from './NeighborhoodsList.svelte';
-  export let selectedBorough: ClientBorough;
-  export let toggleBorough: (id: number) => void;
+  export let selectedRegion: Region;
+  export let toggleRegion: (id: number) => void;
   export let maxNeighborhoods: number;
-  export let numActivities: number;
   export let selectedId: number;
   export let modalOpen = false;
 
@@ -30,18 +29,18 @@
       </div>
       {#if !modalOpen}
         <div class="flex items-center gap-2">
-          {#if selectedBorough}
+          {#if selectedRegion}
             <button
               class="fa-solid fa-arrow-left text-stone-400 text-md"
               on:click={(e) => {
                 e.stopPropagation();
-                toggleBorough(null);
+                toggleRegion(null);
               }}
             />
           {/if}
           <div class="grow">
-            {#if selectedBorough}
-              <BoroughHeader borough={selectedBorough} {maxNeighborhoods} showActivities={false} />
+            {#if selectedRegion}
+              <RegionHeader region={selectedRegion} {maxNeighborhoods} showActivities={false} />
             {:else}
               <div class="h-9 flex items-center justify-center">
                 <p class="text-stone-400">More details</p>
@@ -52,34 +51,34 @@
       {/if}
     </div>
 
-    {#if selectedBorough}
+    {#if selectedRegion}
       <div class="flex items-center gap-2 px-4">
         <button
           class="fa-solid fa-arrow-left text-stone-400 text-md"
           on:click={(e) => {
             e.stopPropagation();
-            toggleBorough(null);
+            toggleRegion(null);
           }}
         />
         <div class="grow">
-          <BoroughHeader borough={selectedBorough} {maxNeighborhoods} showActivities={false} />
+          <RegionHeader region={selectedRegion} {maxNeighborhoods} showActivities={false} />
         </div>
       </div>
       <NeighborhoodsList
-        neighborhoods={selectedBorough.neighborhoods}
-        numActivities={selectedBorough.runs.length}
+        neighborhoods={selectedRegion.neighborhoods}
+        numActivities={selectedRegion.runs.length}
         showActivities={true}
         bind:selectedId
       />
     {:else}
       <div class="grow shrink flex flex-col px-4 pt-2 justify-around">
-        {#each $boroughs as borough}
-          <BoroughHeader {borough} handler={toggleBorough} {maxNeighborhoods} />
+        {#each $regions as region}
+          <RegionHeader {region} handler={toggleRegion} {maxNeighborhoods} />
         {/each}
       </div>
     {/if}
   </div>
   <div class="py-4 px-4">
-    <Footer {numActivities} />
+    <Footer />
   </div>
 </Modal>

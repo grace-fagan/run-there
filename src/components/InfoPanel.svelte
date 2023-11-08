@@ -1,40 +1,39 @@
 <script lang="ts">
-  import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
-  import { getBoroughFromId } from '$lib/neighborhoods-utils';
+  import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
   import { afterUpdate, tick } from 'svelte';
-  import { boroughs, isMobile } from '$lib/store';
+  import { city, regions, isMobile } from '$lib/store';
   import NeighborhoodsList from './NeighborhoodsList.svelte';
-  import BoroughHeader from './BoroughHeader.svelte';
   import { createEventDispatcher } from 'svelte';
   import InfoPanelModal from './InfoPanelModal.svelte';
+  import RegionHeader from './RegionHeader.svelte';
+  import { getRegionFromId } from '$lib/neighborhoods-utils';
 
   const dispatch = createEventDispatcher();
   export let topNeighborhood: string;
   export let selectedId: number;
-  export let numActivities: number;
   export let selectedNeighborhood: Neighborhood;
-  export let selectedBorough: ClientBorough;
+  export let selectedRegion: Region;
 
   let modalOpen = false;
   let prevSelectedNeighborhood: Neighborhood = null;
-  $: maxNeighborhoods = $boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
-  $: topBorough = $boroughs[0].runs.length <= 0 ? 'n/a' : $boroughs[0].name;
+  $: maxNeighborhoods = $regions.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
+  $: topRegion = $regions[0].runs.length <= 0 ? 'n/a' : $regions[0].name;
   $: enableScrolling = $isMobile ? modalOpen : true;
 
   $: visibility = new Map<number, boolean>(
-    $boroughs.map((b) => {
-      const visible = selectedBorough?.id === b.id;
+    $regions.map((b) => {
+      const visible = selectedRegion?.id === b.id;
       return [b.id, visible];
     })
   );
 
-  const toggleBorough = (id: number) => {
-    if (selectedBorough && selectedBorough.id === id) {
-      selectedBorough = null;
+  const toggleRegion = (id: number) => {
+    if (selectedRegion && selectedRegion.id === id) {
+      selectedRegion = null;
       selectedId = null;
-    } else selectedBorough = getBoroughFromId(id);
-    if (!selectedBorough) selectedId = null;
-    dispatch('selectBorough', selectedBorough);
+    } else selectedRegion = getRegionFromId(id);
+    if (!selectedRegion) selectedId = null;
+    dispatch('selectRegion', selectedRegion);
   };
 
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
@@ -63,17 +62,16 @@
 
 {#if $isMobile}
   <InfoPanelModal
-    {selectedBorough}
-    {toggleBorough}
+    {selectedRegion}
+    {toggleRegion}
     {maxNeighborhoods}
-    {numActivities}
     bind:selectedId
     bind:modalOpen
   />
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
     <div class="flex flex-col md: gap-2 py-2 md:py-4">
-      <p>Top borough: <span class="font-semibold">{topBorough}</span></p>
+      <p>Top {$city.secondary || 'region'}: <span class="font-semibold">{topRegion}</span></p>
       <p>Top neighborhood: <span class="font-semibold">{topNeighborhood || 'n/a'}</span></p>
     </div>
     <div
@@ -82,12 +80,12 @@
       <p class="col-span-2">Activities</p>
       <p>Neighborhoods</p>
     </div>
-    {#each $boroughs as borough}
-      <BoroughHeader {borough} handler={toggleBorough} {maxNeighborhoods} />
-      {#if !$isMobile && visibility.get(borough.id)}
+    {#each $regions as region}
+      <RegionHeader {region} handler={toggleRegion} {maxNeighborhoods} />
+      {#if !$isMobile && visibility.get(region.id)}
         <NeighborhoodsList
-          neighborhoods={borough.neighborhoods}
-          numActivities={borough.runs.length}
+          neighborhoods={region.neighborhoods}
+          numActivities={region.runs.length}
           bind:selectedId
         />
       {/if}

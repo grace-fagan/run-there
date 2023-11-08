@@ -4,7 +4,7 @@ import type { Feature, FeatureCollection, LineString, Polygon, Position } from '
 import type { Route } from '$types/client';
 import polyline from '@mapbox/polyline';
 import { getFeatureCenter } from './neighborhoods-utils';
-import type { ClientBorough } from '$types/neighborhoods/nyc';
+import type { Region } from '$types/neighborhoods/nyc';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -189,9 +189,9 @@ export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: Po
   });
 };
 
-export const moveToBorough = (map: MapboxMap, b: ClientBorough | null, center: Position) => {
+export const moveToRegion = (map: MapboxMap, r: Region | null, center: Position) => {
   map.flyTo({
-    center: b ? b.center : center,
-    zoom: b ? 11 : 9.5
+    center: r ? r.center : center,
+    zoom: r ? 11 : 9.5
   });
 };

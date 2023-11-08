@@ -7,7 +7,7 @@
     createMap,
     hideFeatureRoutes,
     hoverFeature,
-    moveToBorough,
+    moveToRegion,
     NEIGHBORHOODS_SRC,
     selectNeighborhood,
     showFeatureRoutes,
@@ -20,13 +20,13 @@
   import type { Route } from '$types/client';
   import Tag from './Tag.svelte';
   import { city, isMobile } from '$lib/store';
-  import type { ClientBorough } from '$types/neighborhoods/nyc';
+  import type { Region } from '$types/neighborhoods/nyc';
 
   export let routes: Route[];
   export let data: FeatureCollection;
   export let maxNumRoutes: number;
   export let selectedId: number = null;
-  export let selectedBorough: ClientBorough = null;
+  export let selectedRegion: Region = null;
 
   let basemap: MapboxMap = null;
   let mapHeight: number = null;
@@ -59,7 +59,7 @@
     hoverFeature(basemap, selectedFeat);
   }
 
-  $: if (mapLoaded && !selectedFeat) moveToBorough(basemap, selectedBorough, $city.center);
+  $: if (mapLoaded && !selectedFeat) moveToRegion(basemap, selectedRegion, $city.center);
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
     if (mapLoaded) {

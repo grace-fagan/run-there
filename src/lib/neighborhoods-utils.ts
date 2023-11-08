@@ -1,15 +1,16 @@
 import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
 import { polygon } from '@turf/helpers';
 import union from '@turf/union';
-import { CodeToBorough, boroughMap } from './nyc-constants';
+import { getRegion, regionMap } from './nyc-constants';
 import point from 'turf-point';
 import booleanIntersects from '@turf/boolean-intersects';
 import center from '@turf/center';
 import type { Activity, Route } from '$types/client';
-import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
+import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
 import { getPolyline } from './mapbox-utils';
 import { get } from 'svelte/store';
-import { boroughs } from './store';
+import { regions } from './store';
+import NYCData from '$data/neighborhoods/NYC.json';
 
 // this function cleans and adds route data to each feature in the raw data collection
 export const loadMapData = (
@@ -44,7 +45,7 @@ export const loadMapData = (
           name: feature.properties.neighborhood as string,
           id,
           parent,
-          color: CodeToBorough(parent).color,
+          color: getRegion(parent).color,
           neighbors: feature.properties.neighbors,
           runs: routesMap.get(id),
           value: routesMap.get(id).length
@@ -55,15 +56,20 @@ export const loadMapData = (
   };
 };
 
-// get client borough data from client neighborhood data
-export const loadBoroughData = (neighborhoods: Neighborhood[]): ClientBorough[] => {
+// get client region data from client neighborhood data
+export const loadRegionData = (neighborhoods: Neighborhood[]): Region[] => {
   const neighborhoodsMap = new Map<number, Neighborhood>(neighborhoods.map((n) => [n.id, n]));
-  return Array.from(boroughMap.values())
-    .map((b) => {
-      // sort by number of runs
-      const neighborhoods = b.nIds
+
+  return Array.from(regionMap.values())
+    .map((r) => {
+      const ids = NYCData.features
+        .filter((f) => Number(f.properties.boroughCode) === r.id)
+        .map((f) => f.id);
+      console.log({ ids });
+      neighborhoods = ids
         .map((id) => neighborhoodsMap.get(id))
         .sort((a, b) => b.runs.length - a.runs.length);
+
       // only count each run once
       const runs: string[] = neighborhoods.reduce((prev, curr) => {
         curr.runs.forEach((r) => {
@@ -73,12 +79,12 @@ export const loadBoroughData = (neighborhoods: Neighborhood[]): ClientBorough[] 
       }, []);
 
       return {
-        id: b.id,
-        name: b.name,
-        color: b.color,
+        id: r.id,
+        name: r.name,
+        color: r.color,
         neighborhoods,
         runs,
-        center: b.center
+        center: r.center
       };
     })
     .sort((a, b) => b.runs.length - a.runs.length);
@@ -170,9 +176,9 @@ export const getCompletedNeighborhoods = (neighborhoods: Neighborhood[]) =>
 
 export const getFeatureCenter = (polygon: Polygon) => center(polygon).geometry.coordinates;
 
-export const getBoroughFromId = (id: number) => {
+export const getRegionFromId = (id: number) => {
   if (!id) return null;
-  const boroughsValue = get(boroughs);
-  const borough = boroughsValue.find((b) => b.id === id);
-  return borough;
+  const regionsValue = get(regions);
+  const region = regionsValue.find((b) => b.id === id);
+  return region;
 };

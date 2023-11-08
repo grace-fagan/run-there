@@ -2,14 +2,14 @@
   import { cityInfo, filterByCity } from '$lib/city-utils';
   import { getLocalActivities, getLocalAuth } from '$lib/auth-utils';
   import { featureToNeighborhood } from '$lib/nyc-constants';
-  import { activities, boroughs, athleteId, isMobile, city } from '$lib/store';
+  import { activities, regions, athleteId, isMobile, city } from '$lib/store';
   import BaseMap from '$components/BaseMap.svelte';
   import {
     getMaxValLength,
     mapNeighborhoodToRoutes,
     loadMapData,
-    loadBoroughData,
-    getBoroughFromId,
+    loadRegionData,
+    getRegionFromId,
     getFeatIdToRoutesMap
   } from '$lib/neighborhoods-utils';
   import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson';
@@ -18,15 +18,16 @@
   import CityHeader from '$components/CityHeader.svelte';
   import ConnectWithStrava from '$components/ConnectWithStrava.svelte';
   import Footer from '$components/Footer.svelte';
-  import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
+  import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
   import type { Activity } from '$types/client';
+  import CityOptions from '$components/CityOptions.svelte';
 
   export let cityName: string;
 
   let error = '';
   let selectedId: number = null;
   let showConnectStrava = false;
-  let selectedBorough: ClientBorough = null;
+  let selectedRegion: Region = null;
   let selectedNeighborhood: Neighborhood = null;
   let cityPolygon: Polygon | MultiPolygon;
   let filteredActivities: Activity[];
@@ -69,23 +70,23 @@
   };
 
   loadActivities();
-  loadCity();
 
+  $: if (cityName) loadCity();
   $: if (cityPolygon) filteredActivities = filterByCity($activities, cityPolygon);
-  $: numActivities = filteredActivities?.length || 0;
   $: routes = mapNeighborhoodToRoutes(NYCData as FeatureCollection, filteredActivities);
   $: featToRoutes = getFeatIdToRoutesMap(NYCData as FeatureCollection, routes);
   $: neighborhoodsMapData = loadMapData(NYCData as FeatureCollection, featToRoutes);
   $: maxNumRoutes = getMaxValLength(featToRoutes);
   $: neighborhoods = neighborhoodsMapData.features.map((f: Feature) => featureToNeighborhood(f));
-  $: $boroughs = loadBoroughData(neighborhoods);
+  $: $regions = loadRegionData(neighborhoods);
   $: numCompleted = Array.from(featToRoutes.values()).filter((arr) => arr.length > 0).length;
   $: totalNeighborhoods = featToRoutes.size;
   $: topNeighborhood = getTopFeature(neighborhoodsMapData)?.properties.name;
 
   $: if (selectedId) {
+    console.log({ selectedId });
     selectedNeighborhood = neighborhoods?.find((n) => n.id === selectedId);
-    selectedBorough = getBoroughFromId(selectedNeighborhood.parent);
+    selectedRegion = getRegionFromId(selectedNeighborhood.parent);
   }
 
   $: console.log({ $activities });
@@ -95,6 +96,7 @@
   class="relative h-screen max-h-screen px-4 md:px-10 pt-6 pb-2 flex flex-col gap-4 max-w-6xl m-auto"
 >
   <div class="flex flex-col gap-0">
+    <CityOptions />
     <CityHeader city={$city.display} {numCompleted} {totalNeighborhoods} />
     <div class="flex w-full gap-2 items-center">
       {#if error}
@@ -107,23 +109,16 @@
   </div>
 
   <div class="content flex flex-col gap-2 md:gap-4 md:flex-row">
-    <BaseMap
-      {routes}
-      data={neighborhoodsMapData}
-      {maxNumRoutes}
-      {selectedBorough}
-      bind:selectedId
-    />
+    <BaseMap {routes} data={neighborhoodsMapData} {maxNumRoutes} {selectedRegion} bind:selectedId />
     <InfoPanel
       {topNeighborhood}
-      {numActivities}
       {selectedNeighborhood}
-      {selectedBorough}
+      {selectedRegion}
       bind:selectedId
-      on:selectBorough={(b) => (selectedBorough = b.detail)}
+      on:selectRegion={(b) => (selectedRegion = b.detail)}
     />
   </div>
   {#if !$isMobile}
-    <Footer {numActivities} />
+    <Footer />
   {/if}
 </main>

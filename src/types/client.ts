@@ -28,4 +28,5 @@ export interface Route {
 export interface City {
   display: string;
   center: Position;
+  secondary?: string;
 }
