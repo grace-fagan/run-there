@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Neighborhood } from '$types/neighborhoods/nyc';
   import { isMobile } from '$lib/store';
-  import { getCompletedNeighborhoods } from '$lib/neighborhoods-utils';
+  import { getCompletedNeighborhoods } from '$lib/utils/neighborhoods';
 
   export let selectedId: number;
   export let neighborhoods: Neighborhood[];

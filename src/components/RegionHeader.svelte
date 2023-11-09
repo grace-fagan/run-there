@@ -1,7 +1,7 @@
 <script lang="ts">
   import ProgressBar from './ProgressBar.svelte';
   import type { Region } from '$types/neighborhoods/nyc';
-  import { getCompletedNeighborhoods } from '$lib/neighborhoods-utils';
+  import { getCompletedNeighborhoods } from '$lib/utils/neighborhoods';
   export let handler: (id: number) => void = null;
   export let region: Region;
   export let maxNeighborhoods: number;

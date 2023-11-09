@@ -6,7 +6,7 @@
   import { createEventDispatcher } from 'svelte';
   import InfoPanelModal from './InfoPanelModal.svelte';
   import RegionHeader from './RegionHeader.svelte';
-  import { getAllRuns, getRegionFromId } from '$lib/neighborhoods-utils';
+  import { getAllRuns, getRegionFromId } from '$lib/utils/neighborhoods';
   import LoadingSpinner from './utils/LoadingSpinner.svelte';
 
   const dispatch = createEventDispatcher();
@@ -83,15 +83,15 @@
   });
 </script>
 
-{#if $isMobile}
+<!-- {#if $isMobile}
   <InfoPanelModal
     {selectedRegion}
     {toggleRegion}
     {maxNeighborhoods}
     bind:selectedId
     bind:modalOpen
-  />
-{:else}
+  /> -->
+{#if !$isMobile}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
     {#if $cityLoaded}
       <div class="flex flex-col md: gap-2 py-2 md:py-4">

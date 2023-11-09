@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { cityInfo, filterByCity } from '$lib/city-utils';
-  import { getLocalActivities, getLocalAuth } from '$lib/auth-utils';
+  import { cityInfo, filterByCity } from '$lib/utils/city';
+  import { getLocalActivities, getLocalAuth } from '$lib/utils/auth';
   import { featureToNeighborhood } from '$lib/nyc-constants';
   import { activities, regions, athleteId, isMobile, city, cityLoaded } from '$lib/store';
   import BaseMap from '$components/BaseMap.svelte';
@@ -10,7 +10,7 @@
     loadRegionData,
     getRegionFromId,
     getFeatureMap
-  } from '$lib/neighborhoods-utils';
+  } from '$lib/utils/neighborhoods';
   import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson';
   import InfoPanel from '$components/InfoPanel.svelte';
   import CityHeader from '$components/CityHeader.svelte';
@@ -20,6 +20,7 @@
   import type { Activity, Route } from '$types/client';
   import CityOptions from '$components/CityOptions.svelte';
   import PageNotFound from './PageNotFound.svelte';
+  import { getDataPath } from '$lib/utils/env';
 
   export let cityName: string;
 
@@ -71,12 +72,14 @@
     $city = cityInfo[cityName];
     if (!$city) return;
 
-    fetch(`../src/data/city_boundaries/${cityName}.json`).then(async (res) => {
+    const path = getDataPath();
+
+    fetch(`${path}/city_boundaries/${cityName}.json`).then(async (res) => {
       const bounds = (await res.json()) as Feature;
       cityPolygon = bounds.geometry as Polygon | MultiPolygon;
       filteredActivities = filterByCity($activities, cityPolygon);
 
-      fetch(`../src/data/neighborhoods/${cityName}.json`).then(async (res) => {
+      fetch(`${path}/neighborhoods/${cityName}.json`).then(async (res) => {
         neighborhoodData = (await res.json()) as FeatureCollection;
         hydrateData();
         loading = false;

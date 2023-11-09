@@ -39,7 +39,7 @@
             />
           {/if}
           <div class="grow">
-            {#if selectedRegion}
+            {#if $regions && selectedRegion}
               <RegionHeader region={selectedRegion} {maxNeighborhoods} showActivities={false} />
             {:else}
               <div class="h-9 flex items-center justify-center">
@@ -51,7 +51,7 @@
       {/if}
     </div>
 
-    {#if selectedRegion}
+    {#if $regions && selectedRegion}
       <div class="flex items-center gap-2 px-4">
         <button
           class="fa-solid fa-arrow-left text-stone-400 text-md"

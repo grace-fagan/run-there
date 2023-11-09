@@ -3,10 +3,10 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
 import type { Route } from '$types/client';
 import polyline from '@mapbox/polyline';
-import { getFeatureCenter } from './neighborhoods-utils';
+import { getFeatureCenter } from './neighborhoods';
 import type { Region } from '$types/neighborhoods/nyc';
 import { get } from 'svelte/store';
-import { city } from './store';
+import { city } from '../store';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;

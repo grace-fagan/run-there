@@ -1,8 +1,8 @@
 <script lang="ts">
   import { activities, athleteId, isMobile } from '$lib/store';
-  import { cleanActivities, formatDate } from '$lib/activity-utiils';
+  import { cleanActivities, formatDate } from '$lib/utils/activity';
   import { getBatchActivities } from '$lib/api';
-  import { getValidAuth, setLocalAuth, updateLocalActivities } from '$lib/auth-utils';
+  import { getValidAuth, setLocalAuth, updateLocalActivities } from '$lib/utils/auth';
   import { writable } from 'svelte/store';
   import type { Activity } from '$types/client';
   import ViewOnStrava from './ViewOnStrava.svelte';

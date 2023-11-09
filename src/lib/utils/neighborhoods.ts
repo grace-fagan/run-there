@@ -1,13 +1,13 @@
 import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
-import { getRegion, regionMap } from './nyc-constants';
+import { getRegion, regionMap } from '../nyc-constants';
 import point from 'turf-point';
 import booleanIntersects from '@turf/boolean-intersects';
 import center from '@turf/center';
 import type { Activity, Route } from '$types/client';
 import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
-import { getPolyline } from './mapbox-utils';
+import { getPolyline } from './mapbox';
 import { get } from 'svelte/store';
-import { regions } from './store';
+import { regions } from '../store';
 
 // this function cleans and adds route data to each feature in the raw data collection
 export const loadMapData = (

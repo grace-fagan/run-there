@@ -1,5 +1,5 @@
 import type { Activity, UserAuth } from '$types/client';
-import { getUserAuth } from './api';
+import { getUserAuth } from '../api';
 
 const clientID = import.meta.env.VITE_CLIENT_ID;
 const redirectURL = `${window.location.origin}/redirect`;
