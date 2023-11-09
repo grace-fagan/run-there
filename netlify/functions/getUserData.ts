@@ -1,6 +1,6 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
-import { handleNetworkError } from '$lib/error';
+import { handleNetworkError } from '$lib/utils/error';
 
 const getUserDataByPage = async (accessToken: string, page: string, after?: string) => {
   const response = await axios.get(

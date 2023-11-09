@@ -1,6 +1,6 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import axios from 'axios';
-import { handleNetworkError } from '$lib/error';
+import { handleNetworkError } from '$lib/utils/error';
 
 const clientID = process.env.VITE_CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
