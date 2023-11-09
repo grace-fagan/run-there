@@ -9,6 +9,7 @@
     hoverFeature,
     moveToRegion,
     NEIGHBORHOODS_SRC,
+    removeLayers,
     selectNeighborhood,
     showFeatureRoutes,
     toggleRoutes,
@@ -21,40 +22,55 @@
   import Tag from './Tag.svelte';
   import { city, isMobile } from '$lib/store';
   import type { Region } from '$types/neighborhoods/nyc';
+  import { getMaxValLength } from '$lib/neighborhoods-utils';
 
   export let routes: Route[];
   export let data: FeatureCollection;
-  export let maxNumRoutes: number;
+  export let featureMap: Map<number, string[]>;
   export let selectedId: number = null;
   export let selectedRegion: Region = null;
 
   let basemap: MapboxMap = null;
   let mapHeight: number = null;
   let mapLoaded = false;
+
+  let neighborhoodsLayer: string = '';
+  let selectedLayer: string = '';
+  let outlineLayer: string = ';';
+
   let hoveredFeat: Feature = null;
-  let visibleFeat: Feature = null;
   let prevVisibleFeat: Feature = null;
   let showAllRoutes = true;
 
-  $: selectedFeat = data.features.find((f) => f.id === selectedId) as Feature;
+  $: selectedFeat = data ? (data.features.find((f) => f.id === selectedId) as Feature) : null;
   $: visibleFeat = hoveredFeat || selectedFeat;
   $: showAllRoutes = !selectedFeat;
 
   $: if (mapHeight && basemap) basemap.resize();
 
-  $: if (mapLoaded && basemap && routes) {
-    addRoutesToMap(basemap, routes);
-    addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);
+  $: if ($city && featureMap) {
+    const maxRoutes = getMaxValLength(featureMap);
+    if (mapLoaded && basemap) {
+      removeLayers(basemap, [selectedLayer, outlineLayer, neighborhoodsLayer]);
+      neighborhoodsLayer = addNeighborhoodsToMap(basemap, data, maxRoutes);
+      selectedLayer = addSelectedLayerToMap(basemap, NEIGHBORHOODS_SRC);
+      addRoutesToMap(basemap, routes);
+      outlineLayer = addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);
+    }
+  }
+
+  $: if (basemap && neighborhoodsLayer) {
+    if (!$isMobile) {
+      basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
+      basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
+    }
+    basemap.on('click', neighborhoodsLayer, handleClick);
   }
 
   // runs when showAllRoutes changes
   $: if (mapLoaded) {
     toggleRoutes(basemap, routes, showAllRoutes);
     if (!showAllRoutes) showFeatureRoutes(basemap, visibleFeat);
-  }
-
-  // runs when selectedFeat changes
-  $: if (mapLoaded) {
     selectNeighborhood(basemap, selectedFeat, $city.center);
     hoverFeature(basemap, selectedFeat);
   }
@@ -96,17 +112,7 @@
 
   onMount(() => {
     basemap = createMap($city.center);
-    basemap.on('load', () => {
-      mapLoaded = true;
-      const neighborhoodsLayer = addNeighborhoodsToMap(basemap, data, maxNumRoutes);
-      addSelectedLayerToMap(basemap, NEIGHBORHOODS_SRC);
-
-      if (!$isMobile) {
-        basemap.on('mousemove', neighborhoodsLayer, handleMousemove);
-        basemap.on('mouseleave', neighborhoodsLayer, handleMouseleave);
-      }
-      basemap.on('click', neighborhoodsLayer, handleClick);
-    });
+    basemap.on('load', () => (mapLoaded = true));
   });
 
   // handles watching the visible feature value and retaining its old value

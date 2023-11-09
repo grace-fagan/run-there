@@ -2,7 +2,8 @@ import type { Neighborhood, Region } from '$types/neighborhoods/nyc';
 import type { Feature } from 'geojson';
 
 export const featureToNeighborhood = (n: Feature): Neighborhood => {
-  const { id, name, parent, color, runs } = n.properties;
+  const id = n.id as number;
+  const { name, parent, color, runs } = n.properties;
   const cleanedRuns = typeof runs === 'string' ? JSON.parse(runs) : runs;
   return { id, name, parent, color, runs: cleanedRuns };
 };

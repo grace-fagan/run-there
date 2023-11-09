@@ -1745,7 +1745,7 @@
         "index": 10,
         "neighborhood": "Bay Terrace",
         "parent": 4,
-        "neighbors": "13,92,257,236"
+        "neighbors": "13,92,257"
       },
       "geometry": {
         "type": "Polygon",
@@ -2475,7 +2475,7 @@
         "index": 20,
         "neighborhood": "Bergen Beach",
         "parent": 3,
-        "neighbors": "35,89,161,91"
+        "neighbors": "35,89,161"
       },
       "geometry": {
         "type": "Polygon",
@@ -3361,7 +3361,7 @@
         "index": 24,
         "neighborhood": "Breezy Point",
         "parent": 4,
-        "neighbors": "171,91"
+        "neighbors": "171"
       },
       "geometry": {
         "type": "Polygon",
@@ -3979,7 +3979,7 @@
         "index": 27,
         "neighborhood": "Broad Channel",
         "parent": 4,
-        "neighbors": "132,135,210,211,125"
+        "neighbors": "132,135"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -6868,7 +6868,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "index": 44, "neighborhood": "City Island", "parent": 2, "neighbors": "188" },
+      "properties": { "index": 44, "neighborhood": "City Island", "parent": 2, "neighbors": "" },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -10006,7 +10006,7 @@
         "index": 55,
         "neighborhood": "Concourse",
         "parent": 2,
-        "neighbors": "46,56,120,166,167,117,72"
+        "neighbors": "46,56,120,166,167"
       },
       "geometry": {
         "type": "Polygon",
@@ -10957,12 +10957,7 @@
     },
     {
       "type": "Feature",
-      "properties": {
-        "index": 64,
-        "neighborhood": "DUMBO",
-        "parent": 3,
-        "neighbors": "30,68,249,242"
-      },
+      "properties": { "index": 64, "neighborhood": "DUMBO", "parent": 3, "neighbors": "30,68,249" },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -11040,7 +11035,7 @@
         "index": 65,
         "neighborhood": "Ditmars Steinway",
         "parent": 4,
-        "neighbors": "6,70,141,202,208"
+        "neighbors": "6,70,141"
       },
       "geometry": {
         "type": "Polygon",
@@ -12199,7 +12194,7 @@
         "index": 72,
         "neighborhood": "East Harlem",
         "parent": 1,
-        "neighbors": "39,117,245,202,194,166,55"
+        "neighbors": "39,117,245"
       },
       "geometry": {
         "type": "Polygon",
@@ -14089,7 +14084,7 @@
         "index": 84,
         "neighborhood": "Ferry Point Park",
         "parent": 2,
-        "neighbors": "236,257"
+        "neighbors": "236"
       },
       "geometry": {
         "type": "Polygon",
@@ -14646,7 +14641,7 @@
         "index": 91,
         "neighborhood": "Floyd Bennett Field",
         "parent": 3,
-        "neighbors": "153,161,192,20,24"
+        "neighbors": "153,161"
       },
       "geometry": {
         "type": "Polygon",
@@ -15488,7 +15483,7 @@
         "index": 98,
         "neighborhood": "Fort Hamilton",
         "parent": 3,
-        "neighbors": "7,9,69,99"
+        "neighbors": "7,9,69"
       },
       "geometry": {
         "type": "Polygon",
@@ -15541,7 +15536,7 @@
         "index": 99,
         "neighborhood": "Fort Wadsworth",
         "parent": 5,
-        "neighbors": "4,54,219,98"
+        "neighbors": "4,54,219"
       },
       "geometry": {
         "type": "Polygon",
@@ -18052,7 +18047,7 @@
         "index": 117,
         "neighborhood": "Harlem",
         "parent": 1,
-        "neighbors": "39,72,162,246,251,166,55,120"
+        "neighbors": "39,72,162,246,251"
       },
       "geometry": {
         "type": "Polygon",
@@ -18459,7 +18454,7 @@
         "index": 120,
         "neighborhood": "Highbridge",
         "parent": 2,
-        "neighbors": "55,163,167,251,117"
+        "neighbors": "55,163,167"
       },
       "geometry": {
         "type": "Polygon",
@@ -18639,7 +18634,7 @@
         "index": 125,
         "neighborhood": "Howard Beach",
         "parent": 4,
-        "neighbors": "74,135,183,225,27"
+        "neighbors": "74,135,183,225"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -19509,12 +19504,7 @@
     },
     {
       "type": "Feature",
-      "properties": {
-        "index": 129,
-        "neighborhood": "Inwood",
-        "parent": 1,
-        "neighbors": "251,228,152,139,244"
-      },
+      "properties": { "index": 129, "neighborhood": "Inwood", "parent": 1, "neighbors": "251" },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -21745,8 +21735,8 @@
       "properties": {
         "index": 139,
         "neighborhood": "Kingsbridge",
-        "parent": 2,
-        "neighbors": "85,94,152,180,209,228,244,247,129"
+        "parent": 1,
+        "neighbors": "85,94,152,180,209,228,244,247"
       },
       "geometry": {
         "type": "Polygon",
@@ -22677,7 +22667,7 @@
         "index": 148,
         "neighborhood": "Long Island City",
         "parent": 4,
-        "neighbors": "6,233,265,259,212"
+        "neighbors": "6,233,265,259"
       },
       "geometry": {
         "type": "Polygon",
@@ -23124,7 +23114,7 @@
         "index": 150,
         "neighborhood": "Lower East Side",
         "parent": 1,
-        "neighbors": "43,75,146,176,177,242,259"
+        "neighbors": "43,75,146,176,177,242"
       },
       "geometry": {
         "type": "Polygon",
@@ -23193,7 +23183,7 @@
         "index": 151,
         "neighborhood": "Manhattan Beach",
         "parent": 3,
-        "neighbors": "26,218"
+        "neighbors": "26"
       },
       "geometry": {
         "type": "Polygon",
@@ -23336,7 +23326,7 @@
         "index": 152,
         "neighborhood": "Marble Hill",
         "parent": 1,
-        "neighbors": "139,129"
+        "neighbors": "139"
       },
       "geometry": {
         "type": "Polygon",
@@ -23381,7 +23371,7 @@
         "index": 153,
         "neighborhood": "Marine Park",
         "parent": 3,
-        "neighbors": "89,91,102,160,161,218,192"
+        "neighbors": "89,91,102,160,161,218"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -24965,7 +24955,7 @@
         "index": 163,
         "neighborhood": "Morris Heights",
         "parent": 2,
-        "neighbors": "120,167,168,244,251"
+        "neighbors": "120,167,168,244"
       },
       "geometry": {
         "type": "Polygon",
@@ -25111,7 +25101,7 @@
         "index": 166,
         "neighborhood": "Mott Haven",
         "parent": 2,
-        "neighbors": "55,56,149,156,194,72,117"
+        "neighbors": "55,56,149,156,194"
       },
       "geometry": {
         "type": "Polygon",
@@ -26222,7 +26212,7 @@
         "index": 188,
         "neighborhood": "Pelham Bay Park",
         "parent": 2,
-        "neighbors": "50,59,76,187,189,44"
+        "neighbors": "50,59,76,187,189"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27013,12 +27003,7 @@
     },
     {
       "type": "Feature",
-      "properties": {
-        "index": 192,
-        "neighborhood": "Plum Beach",
-        "parent": 3,
-        "neighbors": "218,153,91"
-      },
+      "properties": { "index": 192, "neighborhood": "Plum Beach", "parent": 3, "neighbors": "218" },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -27904,7 +27889,7 @@
         "index": 194,
         "neighborhood": "Port Morris",
         "parent": 2,
-        "neighbors": "128,149,166,72,202"
+        "neighbors": "128,149,166"
       },
       "geometry": {
         "type": "Polygon",
@@ -28851,7 +28836,7 @@
         "index": 202,
         "neighborhood": "Randall's Island",
         "parent": 1,
-        "neighbors": "65,194,72"
+        "neighbors": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -29524,12 +29509,7 @@
     },
     {
       "type": "Feature",
-      "properties": {
-        "index": 208,
-        "neighborhood": "Rikers Island",
-        "parent": 2,
-        "neighbors": "65"
-      },
+      "properties": { "index": 208, "neighborhood": "Rikers Island", "parent": 2, "neighbors": "" },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -29730,7 +29710,7 @@
         "index": 210,
         "neighborhood": "Rockaway Beach",
         "parent": 4,
-        "neighbors": "5,211,27"
+        "neighbors": "5,211"
       },
       "geometry": {
         "type": "Polygon",
@@ -30040,7 +30020,7 @@
         "index": 211,
         "neighborhood": "Rockaway Park",
         "parent": 4,
-        "neighbors": "16,210,27"
+        "neighbors": "16,210"
       },
       "geometry": {
         "type": "Polygon",
@@ -30121,7 +30101,7 @@
         "index": 212,
         "neighborhood": "Roosevelt Island",
         "parent": 1,
-        "neighbors": "148,245"
+        "neighbors": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -30866,7 +30846,7 @@
         "index": 218,
         "neighborhood": "Sheepshead Bay",
         "parent": 3,
-        "neighbors": "26,102,110,153,160,192,151"
+        "neighbors": "26,102,110,153,160,192"
       },
       "geometry": {
         "type": "Polygon",
@@ -31848,7 +31828,7 @@
         "index": 228,
         "neighborhood": "Spuyten Duyvil",
         "parent": 2,
-        "neighbors": "139,209,129"
+        "neighbors": "139,209"
       },
       "geometry": {
         "type": "Polygon",
@@ -32771,7 +32751,7 @@
         "index": 236,
         "neighborhood": "Throgs Neck",
         "parent": 2,
-        "neighbors": "59,84,216,243,10"
+        "neighbors": "59,84,216,243"
       },
       "geometry": {
         "type": "Polygon",
@@ -34181,7 +34161,7 @@
         "index": 242,
         "neighborhood": "Two Bridges",
         "parent": 1,
-        "neighbors": "43,45,86,150,64"
+        "neighbors": "43,45,86,150"
       },
       "geometry": {
         "type": "Polygon",
@@ -34442,7 +34422,7 @@
         "index": 244,
         "neighborhood": "University Heights",
         "parent": 2,
-        "neighbors": "94,139,163,168,129"
+        "neighbors": "94,139,163,168"
       },
       "geometry": {
         "type": "Polygon",
@@ -34501,7 +34481,7 @@
         "index": 245,
         "neighborhood": "Upper East Side",
         "parent": 1,
-        "neighbors": "39,72,159,212"
+        "neighbors": "39,72,159"
       },
       "geometry": {
         "type": "Polygon",
@@ -34985,7 +34965,7 @@
         "index": 251,
         "neighborhood": "Washington Heights",
         "parent": 1,
-        "neighbors": "117,129,163,120"
+        "neighbors": "117,129"
       },
       "geometry": {
         "type": "Polygon",
@@ -35518,7 +35498,7 @@
         "index": 257,
         "neighborhood": "Whitestone",
         "parent": 4,
-        "neighbors": "10,52,92,84"
+        "neighbors": "10,52,92"
       },
       "geometry": {
         "type": "Polygon",
@@ -36243,8 +36223,8 @@
       "properties": {
         "index": 259,
         "neighborhood": "Williamsburg",
-        "parent": 3,
-        "neighbors": "15,33,49,114,170,207,148,150"
+        "parent": 4,
+        "neighbors": "15,33,49,114,170,207,148"
       },
       "geometry": {
         "type": "Polygon",

@@ -1,6 +1,4 @@
 import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
-import { polygon } from '@turf/helpers';
-import union from '@turf/union';
 import { getRegion, regionMap } from './nyc-constants';
 import point from 'turf-point';
 import booleanIntersects from '@turf/boolean-intersects';
@@ -10,47 +8,30 @@ import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
 import { getPolyline } from './mapbox-utils';
 import { get } from 'svelte/store';
 import { regions } from './store';
-import NYCData from '$data/neighborhoods/NYC.json';
+import NYCData from '$data/neighborhoods/nyc.json';
 
 // this function cleans and adds route data to each feature in the raw data collection
 export const loadMapData = (
   data: FeatureCollection,
-  routesMap: Map<number, string[]>
+  featureMap: Map<number, string[]>
 ): FeatureCollection => {
   return {
     type: 'FeatureCollection',
     features: data.features.map((feature) => {
-      let featurePolygon = feature.geometry as Polygon;
-
-      // if feature has multiple polygons, get the union of them
-      if (featurePolygon.coordinates.length > 1) {
-        let unionGeometry: Feature<Polygon>;
-        featurePolygon.coordinates.map((f) => {
-          const singlePolygon = polygon([f]) as Feature<Polygon>;
-          if (!unionGeometry) {
-            unionGeometry = singlePolygon;
-          } else {
-            unionGeometry = union(unionGeometry, singlePolygon) as Feature<Polygon>;
-          }
-        });
-        featurePolygon = unionGeometry.geometry;
-      }
-
-      const parent = Number(feature.properties.boroughCode);
-      const id = Number(feature.id);
+      const parent = Number(feature.properties.parent);
+      const id = Number(feature.properties.index);
 
       return {
         ...feature,
+        id,
         properties: {
           name: feature.properties.neighborhood as string,
-          id,
           parent,
-          color: getRegion(parent).color,
+          color: getRegion(parent)?.color || '#63BC83',
           neighbors: feature.properties.neighbors,
-          runs: routesMap.get(id),
-          value: routesMap.get(id).length
-        },
-        geometry: featurePolygon
+          runs: featureMap.get(id),
+          value: featureMap.get(id).length
+        }
       };
     })
   };
@@ -58,14 +39,14 @@ export const loadMapData = (
 
 // get client region data from client neighborhood data
 export const loadRegionData = (neighborhoods: Neighborhood[]): Region[] => {
+  console.log('loading region data for: ', neighborhoods);
   const neighborhoodsMap = new Map<number, Neighborhood>(neighborhoods.map((n) => [n.id, n]));
 
   return Array.from(regionMap.values())
     .map((r) => {
       const ids = NYCData.features
-        .filter((f) => Number(f.properties.boroughCode) === r.id)
-        .map((f) => f.id);
-      console.log({ ids });
+        .filter((f) => Number(f.properties.parent) === r.id)
+        .map((f) => f.properties.index);
       neighborhoods = ids
         .map((id) => neighborhoodsMap.get(id))
         .sort((a, b) => b.runs.length - a.runs.length);
@@ -98,7 +79,7 @@ const checkNeighbors = (
   accumFeatures: number[],
   visited: number[]
 ) => {
-  const currId = currFeature.id as number;
+  const currId = currFeature.properties.index as number;
   // if neighborhood has already been checked, return
   if (accumFeatures.includes(currId) || visited.includes(currId)) return;
   visited.push(currId);
@@ -106,34 +87,37 @@ const checkNeighbors = (
   if (!booleanIntersects(route, currFeature)) return;
   else {
     accumFeatures.push(currId);
-    currFeature.properties.neighbors.forEach((n) =>
+    const neighborsToCheck = currFeature.properties.neighbors.split(',').map(Number) as number[];
+    neighborsToCheck.forEach((n) =>
       checkNeighbors(featMap, route, featMap.get(n), accumFeatures, visited)
     );
   }
   return accumFeatures;
 };
 
-export const getNeighborhoodsFromRoute = (
+// Given a feature collection and route, return all neighborhoods included in a route
+const getRouteNeighborhoods = (
   data: FeatureCollection,
   featMap: Map<number, Feature>,
   route: LineString
 ) => {
   const startPoint = route.coordinates[0];
-  const startNeighborhood = getFeatureFromPoint(data, startPoint);
+  const startNeighborhood = getPolygonFromPoint(data, startPoint);
   if (!startNeighborhood) return [];
   return checkNeighbors(featMap, route, startNeighborhood, [], []);
 };
 
-export const mapNeighborhoodToRoutes = (data: FeatureCollection, activities: Activity[]) => {
+// Given a feature collection and a list of activities, return a list of routes
+export const getRoutes = (data: FeatureCollection, activities: Activity[]): Route[] => {
   // create map from ID to feature object
-  const featureIdMap = createFeatureIdMap(data);
+  const idToFeature = mapIdToFeature(data);
 
   const routes =
     activities &&
     activities.map((a) => {
       const id = a.id;
       const lineString = getPolyline(a.summaryPolyline);
-      const neighborhoods = getNeighborhoodsFromRoute(data, featureIdMap, lineString);
+      const neighborhoods = getRouteNeighborhoods(data, idToFeature, lineString);
       return {
         id: id,
         lineString,
@@ -144,9 +128,12 @@ export const mapNeighborhoodToRoutes = (data: FeatureCollection, activities: Act
   return routes;
 };
 
-export const getFeatIdToRoutesMap = (data: FeatureCollection, routes: Route[]) => {
+// Given a feature collection and list of routes, return a mapping between one feature and its associated routes
+export const getFeatureMap = (data: FeatureCollection, routes: Route[]) => {
   // create empty map that will hold routes
-  const featToRoutesMap = new Map<number, string[]>(data.features.map((f) => [f.id as number, []]));
+  const featToRoutesMap = new Map<number, string[]>(
+    data.features.map((f) => [f.properties.index as number, []])
+  );
   routes &&
     routes.map((r) => {
       const neighborhoods = r.neighborhoods;
@@ -155,13 +142,13 @@ export const getFeatIdToRoutesMap = (data: FeatureCollection, routes: Route[]) =
   return featToRoutesMap;
 };
 
-export const getFeatureFromPoint = (data: FeatureCollection, pointToFind: Position) => {
+export const getPolygonFromPoint = (data: FeatureCollection, pointToFind: Position) => {
   return data.features.find((feature) => booleanIntersects(point(pointToFind), feature));
 };
 
-export const createFeatureIdMap = (data: FeatureCollection) => {
+export const mapIdToFeature = (data: FeatureCollection) => {
   if (!data.features) return new Map();
-  return new Map<number, Feature>(data.features.map((f) => [f.id as number, f]));
+  return new Map<number, Feature>(data.features.map((f) => [f.properties.index as number, f]));
 };
 
 // takes a map gets the maximum length of all its values
