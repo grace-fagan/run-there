@@ -19,6 +19,7 @@
   import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
   import type { Activity, Route } from '$types/client';
   import CityOptions from '$components/CityOptions.svelte';
+  import PageNotFound from './PageNotFound.svelte';
 
   export let cityName: string;
 
@@ -68,6 +69,7 @@
     $cityLoaded = false;
     loading = true;
     $city = cityInfo[cityName];
+    if (!$city) return;
 
     fetch(`../src/data/city_boundaries/${cityName}.json`).then(async (res) => {
       const bounds = (await res.json()) as Feature;
@@ -94,30 +96,34 @@
 <main
   class="relative h-screen max-h-screen px-4 md:px-10 pt-6 pb-2 flex flex-col gap-1 max-w-6xl m-auto"
 >
-  <div class="flex flex-col gap-1">
-    <CityOptions />
-    <CityHeader city={$city.display} {featureMap} />
-    <div class="flex w-full gap-2 items-center">
-      {#if error}
-        <p class="error">{error}</p>
-      {/if}
-      {#if showConnectStrava}
-        <ConnectWithStrava height={32} />
-      {/if}
+  {#if $city}
+    <div class="flex flex-col gap-1">
+      <CityOptions />
+      <CityHeader city={$city.display} {featureMap} />
+      <div class="flex w-full gap-2 items-center">
+        {#if error}
+          <p class="error">{error}</p>
+        {/if}
+        {#if showConnectStrava}
+          <ConnectWithStrava height={32} />
+        {/if}
+      </div>
     </div>
-  </div>
 
-  <div class="content flex flex-col gap-2 md:gap-4 md:flex-row">
-    <BaseMap {routes} data={mapData} {featureMap} {selectedRegion} bind:selectedId />
-    <InfoPanel
-      {neighborhoods}
-      {selectedNeighborhood}
-      {selectedRegion}
-      bind:selectedId
-      on:selectRegion={(b) => (selectedRegion = b.detail)}
-    />
-  </div>
-  {#if !$isMobile}
-    <Footer />
+    <div class="content flex flex-col gap-2 md:gap-4 md:flex-row">
+      <BaseMap {routes} data={mapData} {featureMap} {selectedRegion} bind:selectedId />
+      <InfoPanel
+        {neighborhoods}
+        {selectedNeighborhood}
+        {selectedRegion}
+        bind:selectedId
+        on:selectRegion={(b) => (selectedRegion = b.detail)}
+      />
+    </div>
+    {#if !$isMobile}
+      <Footer />
+    {/if}
+  {:else}
+    <PageNotFound />
   {/if}
 </main>
