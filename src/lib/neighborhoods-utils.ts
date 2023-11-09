@@ -41,7 +41,6 @@ export const loadRegionData = (
   data: FeatureCollection,
   neighborhoods: Neighborhood[]
 ): Region[] => {
-  console.log('loading region data for: ', neighborhoods);
   const neighborhoodsMap = new Map<number, Neighborhood>(neighborhoods.map((n) => [n.id, n]));
 
   return Array.from(regionMap.values())

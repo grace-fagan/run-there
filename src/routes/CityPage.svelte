@@ -61,9 +61,11 @@
     mapData = loadMapData(neighborhoodData, featureMap);
     neighborhoods = mapData.features.map((f: Feature) => featureToNeighborhood(f));
     $regions = cityName === 'nyc' ? loadRegionData(neighborhoodData, neighborhoods) : null;
+    selectedId = null;
   };
 
   const loadCity = async () => {
+    $cityLoaded = false;
     loading = true;
     $city = cityInfo[cityName];
 
@@ -84,10 +86,9 @@
   loadActivities();
 
   $: if (cityName) loadCity();
-  $: if (selectedId) {
-    selectedNeighborhood = neighborhoods?.find((n) => n.id === selectedId);
-    if ($regions) selectedRegion = getRegionFromId(selectedNeighborhood.parent);
-  }
+  $: selectedNeighborhood =
+    selectedId && neighborhoods ? neighborhoods.find((n) => n.id === selectedId) : null;
+  $: selectedRegion = $regions ? getRegionFromId(selectedNeighborhood?.parent) : null;
 </script>
 
 <main

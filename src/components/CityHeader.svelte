@@ -23,7 +23,5 @@
       <h2 class="text-2xl md:text-4xl">{hoodsCompleted} / {totalNeighborhoods}</h2>
       <p class="text-xs md:text-auto">{percentComplete}% of neighborhoods</p>
     </div>
-  {:else}
-    <p>Loading...</p>
   {/if}
 </div>

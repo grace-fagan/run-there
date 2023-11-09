@@ -7,6 +7,7 @@
   import InfoPanelModal from './InfoPanelModal.svelte';
   import RegionHeader from './RegionHeader.svelte';
   import { getAllRuns, getRegionFromId } from '$lib/neighborhoods-utils';
+  import LoadingSpinner from './utils/LoadingSpinner.svelte';
 
   const dispatch = createEventDispatcher();
   export let neighborhoods: Neighborhood[];
@@ -92,9 +93,7 @@
   />
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
-    {#if !$cityLoaded}
-      <p>Loading...</p>
-    {:else}
+    {#if $cityLoaded}
       <div class="flex flex-col md: gap-2 py-2 md:py-4">
         {#if $regions}
           <p>Top {$city.secondary || 'region'}: <span class="font-semibold">{topRegion}</span></p>
@@ -126,6 +125,10 @@
           showActivities={true}
         />
       {/if}
+    {:else}
+      <div class="grow flex items-center justify-center">
+        <LoadingSpinner borderColor="#F5F5F4" borderTop="#1F2937" />
+      </div>
     {/if}
   </div>
 {/if}

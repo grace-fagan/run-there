@@ -8,7 +8,7 @@
 <div class="flex gap-4">
   {#each cities as [cityKey, cityInfo]}
     <Link to="/{cityKey}" let:active>
-      <p class={active ? 'font-bold underline' : ''}>{cityInfo.display}</p>
+      <p class={active ? 'font-bold underline' : ''}>{cityKey.toUpperCase()}</p>
     </Link>
   {/each}
 </div>
