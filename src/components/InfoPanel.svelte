@@ -6,7 +6,7 @@
   import { createEventDispatcher } from 'svelte';
   import InfoPanelModal from './InfoPanelModal.svelte';
   import RegionHeader from './RegionHeader.svelte';
-  import { getRegionFromId } from '$lib/neighborhoods-utils';
+  import { getAllRuns, getRegionFromId } from '$lib/neighborhoods-utils';
 
   const dispatch = createEventDispatcher();
   export let neighborhoods: Neighborhood[];
@@ -121,7 +121,7 @@
       {:else}
         <NeighborhoodsList
           {neighborhoods}
-          numActivities={neighborhoods.reduce((total, n) => total + n.runs.length, 0)}
+          numActivities={getAllRuns(neighborhoods).length}
           bind:selectedId
           showActivities={true}
         />

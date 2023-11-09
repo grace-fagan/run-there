@@ -52,14 +52,7 @@ export const loadRegionData = (
       neighborhoods = ids
         .map((id) => neighborhoodsMap.get(id))
         .sort((a, b) => b.runs.length - a.runs.length);
-
-      // only count each run once
-      const runs: string[] = neighborhoods.reduce((prev, curr) => {
-        curr.runs.forEach((r) => {
-          if (!prev.includes(r)) prev.push(r);
-        });
-        return prev;
-      }, []);
+      const runs = getAllRuns(neighborhoods);
 
       return {
         id: r.id,
@@ -170,4 +163,14 @@ export const getRegionFromId = (id: number) => {
   const regionsValue = get(regions);
   const region = regionsValue.find((b) => b.id === id);
   return region;
+};
+
+export const getAllRuns = (neighborhoods: Neighborhood[]) => {
+  return neighborhoods.reduce((prev, curr) => {
+    curr.runs.forEach((r) => {
+      // only count each run once
+      if (!prev.includes(r)) prev.push(r);
+    });
+    return prev;
+  }, []);
 };

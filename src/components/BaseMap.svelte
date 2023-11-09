@@ -71,6 +71,9 @@
   $: if (mapLoaded) {
     toggleRoutes(basemap, routes, showAllRoutes);
     if (!showAllRoutes) showFeatureRoutes(basemap, visibleFeat);
+  }
+
+  $: if (mapLoaded) {
     selectNeighborhood(basemap, selectedFeat, $city.center);
     hoverFeature(basemap, selectedFeat);
   }
