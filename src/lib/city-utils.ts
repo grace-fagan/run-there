@@ -17,16 +17,16 @@ export const filterByCity = (activities: Activity[], city: MultiPolygon | Polygo
 
 export const cityInfo: Record<string, City> = {
   nyc: {
-    display: 'NYC',
+    display: 'New York City',
     center: [-73.95473, 40.67232],
     secondary: 'borough'
   },
   sea: {
-    display: 'SEA',
+    display: 'Seattle',
     center: [-122.3320708, 47.6062095]
   },
   chi: {
-    display: 'CHI',
+    display: 'Chicago',
     center: [-87.6297982, 41.8781136]
   }
 };

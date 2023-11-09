@@ -7,6 +7,7 @@
     createMap,
     hideFeatureRoutes,
     hoverFeature,
+    moveToCity,
     moveToRegion,
     NEIGHBORHOODS_SRC,
     removeLayers,
@@ -56,6 +57,7 @@
       selectedLayer = addSelectedLayerToMap(basemap, NEIGHBORHOODS_SRC);
       addRoutesToMap(basemap, routes);
       outlineLayer = addOutlinesToMap(basemap, NEIGHBORHOODS_SRC);
+      moveToCity(basemap);
     }
   }
 
@@ -71,11 +73,15 @@
   $: if (mapLoaded) {
     toggleRoutes(basemap, routes, showAllRoutes);
     if (!showAllRoutes) showFeatureRoutes(basemap, visibleFeat);
+  }
+
+  // runs when selectedFeat changes
+  $: if (mapLoaded) {
     selectNeighborhood(basemap, selectedFeat, $city.center);
     hoverFeature(basemap, selectedFeat);
   }
 
-  $: if (mapLoaded && !selectedFeat) moveToRegion(basemap, selectedRegion, $city.center);
+  $: if (mapLoaded && !selectedFeat) moveToRegion(basemap, selectedRegion);
 
   const watchVisibleFeature = (oldVal: Feature, newVal: Feature) => {
     if (mapLoaded) {

@@ -5,6 +5,8 @@ import type { Route } from '$types/client';
 import polyline from '@mapbox/polyline';
 import { getFeatureCenter } from './neighborhoods-utils';
 import type { Region } from '$types/neighborhoods/nyc';
+import { get } from 'svelte/store';
+import { city } from './store';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -195,9 +197,11 @@ export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: Po
   });
 };
 
-export const moveToRegion = (map: MapboxMap, r: Region | null, center: Position) => {
-  map.flyTo({
-    center: r ? r.center : center,
-    zoom: r ? 11 : 9.5
-  });
+export const moveToRegion = (map: MapboxMap, r: Region) => {
+  if (!r) map.flyTo({ center: get(city).center, zoom: 9.5 });
+  else map.flyTo({ center: r.center, zoom: 11 });
+};
+
+export const moveToCity = (map: MapboxMap) => {
+  map.jumpTo({ center: get(city).center });
 };
