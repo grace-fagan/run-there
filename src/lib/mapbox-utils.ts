@@ -1,10 +1,10 @@
 import mapboxgl, { Map as MapboxMap } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import type { Feature, FeatureCollection, LineString, Polygon } from 'geojson';
-import type { LatLng, Route } from '$types/client';
+import type { Feature, FeatureCollection, LineString, Polygon, Position } from 'geojson';
+import type { Route } from '$types/client';
 import polyline from '@mapbox/polyline';
 import { getFeatureCenter } from './neighborhoods-utils';
-import type { ClientBorough } from '$types/neighborhoods/nyc';
+import type { Region } from '$types/neighborhoods/nyc';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -14,14 +14,19 @@ export const NEIGHBORHOODS_SRC = 'neighborhoods';
 
 export const getPolyline = (summary: string): LineString => polyline.toGeoJSON(summary);
 
-export const createMap = (center: LatLng): MapboxMap => {
+export const createMap = (center: Position): MapboxMap => {
   return new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/gracefagan/cl41z1iv1001h15p8tzq6m7fy',
-    center: [center.lng, center.lat],
+    center,
     zoom: 9.5
   });
 };
+
+export const removeLayers = (map: MapboxMap, layers: string[]) =>
+  layers.forEach((l) => {
+    if (map.getLayer(l)) map.removeLayer(l);
+  });
 
 export const addNeighborhoodsToMap = (
   map: MapboxMap,
@@ -29,41 +34,40 @@ export const addNeighborhoodsToMap = (
   maxValue: number
 ) => {
   const layerName = NEIGHBORHOODS_SRC + '-fill';
+  if (map.getSource(NEIGHBORHOODS_SRC)) map.removeSource(NEIGHBORHOODS_SRC);
 
-  if (!map.getSource(NEIGHBORHOODS_SRC)) {
-    map.addSource(NEIGHBORHOODS_SRC, {
-      type: 'geojson',
-      data: features
-    });
+  map.addSource(NEIGHBORHOODS_SRC, {
+    type: 'geojson',
+    data: features
+  });
 
-    if (!map.getLayer(layerName)) {
-      map.addLayer({
-        id: layerName,
-        type: 'fill',
-        source: NEIGHBORHOODS_SRC,
-        paint: {
-          'fill-color': ['get', 'color'],
-          'fill-opacity': [
-            'case',
-            ['==', maxValue, 0],
+  if (!map.getLayer(layerName)) {
+    map.addLayer({
+      id: layerName,
+      type: 'fill',
+      source: NEIGHBORHOODS_SRC,
+      paint: {
+        'fill-color': ['get', 'color'],
+        'fill-opacity': [
+          'case',
+          ['==', maxValue, 0],
+          0.2,
+          ['==', ['get', 'value'], 0],
+          0,
+          ['>', ['get', 'value'], 0],
+          [
+            'interpolate',
+            ['exponential', 0.97],
+            ['get', 'value'],
+            1,
             0.2,
-            ['==', ['get', 'value'], 0],
-            0,
-            ['>', ['get', 'value'], 0],
-            [
-              'interpolate',
-              ['exponential', 0.97],
-              ['get', 'value'],
-              1,
-              0.2,
-              maxValue <= 1 ? 1.1 : maxValue,
-              0.9
-            ],
-            0.2
-          ]
-        }
-      });
-    }
+            maxValue <= 1 ? 1.1 : maxValue,
+            0.9
+          ],
+          0.2
+        ]
+      }
+    });
   }
   return layerName;
 };
@@ -121,7 +125,7 @@ export const toggleRoutes = (map: MapboxMap, routes: Route[], visible: boolean =
   }
 };
 
-export const addSelectedLayerToMap = (map: MapboxMap, source: string) => {
+export const addSelectedLayerToMap = (map: MapboxMap, source: string): string => {
   const layerName = source + '-selected';
   if (map.getLayer(layerName)) map.removeLayer(layerName);
   map.addLayer({
@@ -136,9 +140,10 @@ export const addSelectedLayerToMap = (map: MapboxMap, source: string) => {
       'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0, 0.3]
     }
   });
+  return layerName;
 };
 
-export const addOutlinesToMap = (map: MapboxMap, source: string) => {
+export const addOutlinesToMap = (map: MapboxMap, source: string): string => {
   const layerName = source + '-outline';
   if (map.getLayer(layerName)) map.removeLayer(layerName);
   map.addLayer({
@@ -151,6 +156,7 @@ export const addOutlinesToMap = (map: MapboxMap, source: string) => {
       'line-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0]
     }
   });
+  return layerName;
 };
 
 export const hoverFeature = (map: MapboxMap, n: Feature) => {
@@ -181,17 +187,17 @@ export const hideFeatureRoutes = (map: MapboxMap, n: Feature) => {
   });
 };
 
-export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: LatLng) => {
+export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: Position) => {
   map.setLayoutProperty('neighborhoods-selected', 'visibility', n ? 'visible' : 'none');
   map.flyTo({
-    center: n ? getFeatureCenter(n.geometry as Polygon) : [center.lng, center.lat],
+    center: n ? getFeatureCenter(n.geometry as Polygon) : center,
     zoom: n ? 13 : 9.5
   });
 };
 
-export const moveToBorough = (map: MapboxMap, b: ClientBorough | null, center: LatLng) => {
+export const moveToRegion = (map: MapboxMap, r: Region | null, center: Position) => {
   map.flyTo({
-    center: b ? [b.center.lng, b.center.lat] : [center.lng, center.lat],
-    zoom: b ? 11 : 9.5
+    center: r ? r.center : center,
+    zoom: r ? 11 : 9.5
   });
 };

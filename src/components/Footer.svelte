@@ -2,13 +2,12 @@
   import { isMobile } from '$lib/store';
   import RefreshFooter from './RefreshFooter.svelte';
   import ViewOnStrava from './ViewOnStrava.svelte';
-  export let numActivities: number;
 </script>
 
 <div
   class="flex flex-col gap-2 md:gap-0 md:flex-row md:justify-between justify-start h-8 md:items-center"
 >
-  <RefreshFooter {numActivities} />
+  <RefreshFooter />
   <div class="flex justify-between">
     {#if $isMobile}
       <ViewOnStrava />

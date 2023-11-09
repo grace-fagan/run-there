@@ -56,6 +56,7 @@
         try {
           fetchingActivities = true;
           const rawActivities = await getBatchActivities(accessToken, totalActivitiesFetched);
+          console.log({ rawActivities });
           if (!rawActivities) throw new Error('No activity data found.');
           const cleanedActivities = cleanActivities(rawActivities);
           $activities = cleanedActivities;

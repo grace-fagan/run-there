@@ -7,8 +7,6 @@
   import type { Activity } from '$types/client';
   import ViewOnStrava from './ViewOnStrava.svelte';
 
-  export let numActivities: number;
-
   let fetching = false;
   let hasFetched = false;
   let errorMsg = '';
@@ -64,7 +62,7 @@
     {#if mostRecent}
       <span>Latest activity: {formatDate(mostRecent.startDate)},</span>
     {/if}
-    <span>{numActivities} activities</span>
+    <span>{$activities.length} activities</span>
     {#if !$isMobile}
       <span>(<ViewOnStrava />)</span>
     {/if}

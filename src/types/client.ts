@@ -1,16 +1,11 @@
 import type { ActivityType } from './stravaAPI';
-import type { LineString } from 'geojson';
+import type { LineString, Position } from 'geojson';
 
 export interface UserAuth {
   id: string;
   accessToken: string;
   refreshToken: string;
   expiresAt: number;
-}
-
-export interface LatLng {
-  lat: number;
-  lng: number;
 }
 
 //To-DO: move summaryPolyline to Route object
@@ -21,7 +16,7 @@ export interface Activity {
   summaryPolyline: string;
   sport: ActivityType;
   startDate: Date;
-  startLatLng: LatLng;
+  startLatLng: Position;
 }
 
 export interface Route {
@@ -30,9 +25,8 @@ export interface Route {
   neighborhoods: number[];
 }
 
-export interface CityBounds {
-  minLng: number;
-  minLat: number;
-  maxLng: number;
-  maxLat: number;
+export interface City {
+  display: string;
+  center: Position;
+  secondary?: string;
 }

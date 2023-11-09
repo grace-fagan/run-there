@@ -9,6 +9,7 @@
   export let numActivities: number;
 
   const toggleNeighborhood = (id: number) => (selectedId = selectedId === id ? null : id);
+  $: sortedNeighborhoods = neighborhoods.sort((a, b) => b.runs.length - a.runs.length);
   $: percentComplete = Math.round(
     (getCompletedNeighborhoods(neighborhoods) / neighborhoods.length) * 100
   );
@@ -24,7 +25,7 @@
     {/if}
     <span>{percentComplete}% complete</span>
   </p>
-  {#each neighborhoods as n, i}
+  {#each sortedNeighborhoods as n, i}
     <div
       class="flex gap-2 items-center cursor-pointer"
       id={n.id.toString()}

@@ -1,45 +1,66 @@
 <script lang="ts">
-  import type { ClientBorough, Neighborhood } from '$types/neighborhoods/nyc';
-  import { getBoroughFromId } from '$lib/neighborhoods-utils';
+  import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
   import { afterUpdate, tick } from 'svelte';
-  import { boroughs, isMobile } from '$lib/store';
+  import { city, cityLoaded, regions, isMobile } from '$lib/store';
   import NeighborhoodsList from './NeighborhoodsList.svelte';
-  import BoroughHeader from './BoroughHeader.svelte';
   import { createEventDispatcher } from 'svelte';
   import InfoPanelModal from './InfoPanelModal.svelte';
+  import RegionHeader from './RegionHeader.svelte';
+  import { getRegionFromId } from '$lib/neighborhoods-utils';
 
   const dispatch = createEventDispatcher();
-  export let topNeighborhood: string;
+  export let neighborhoods: Neighborhood[];
   export let selectedId: number;
-  export let numActivities: number;
   export let selectedNeighborhood: Neighborhood;
-  export let selectedBorough: ClientBorough;
+  export let selectedRegion: Region;
+
+  let maxNeighborhoods: number;
+  let topRegion: string;
+  let topNeighborhood: string;
+  let regionVisibility: Map<number, boolean>;
+
+  const getTopNeighborhood = (data: Neighborhood[]) => {
+    if (!data) return null;
+    const topFeature = data.reduce((top, curr) => {
+      if (top.runs.length - curr.runs.length < 0) return curr;
+      return top;
+    });
+    if (topFeature.runs.length <= 0) return null;
+    else return topFeature;
+  };
 
   let modalOpen = false;
   let prevSelectedNeighborhood: Neighborhood = null;
-  $: maxNeighborhoods = $boroughs.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
-  $: topBorough = $boroughs[0].runs.length <= 0 ? 'n/a' : $boroughs[0].name;
+
+  $: if ($cityLoaded) {
+    topNeighborhood = getTopNeighborhood(neighborhoods).name;
+    if ($regions) {
+      maxNeighborhoods = $regions.reduce((a, b) => Math.max(a, b.neighborhoods.length), 0);
+      topRegion = $regions && $regions[0].runs.length <= 0 ? 'n/a' : $regions[0].name;
+      regionVisibility = new Map<number, boolean>(
+        $regions.map((b) => {
+          const visible = selectedRegion?.id === b.id;
+          return [b.id, visible];
+        })
+      );
+    }
+  }
+
   $: enableScrolling = $isMobile ? modalOpen : true;
 
-  $: visibility = new Map<number, boolean>(
-    $boroughs.map((b) => {
-      const visible = selectedBorough?.id === b.id;
-      return [b.id, visible];
-    })
-  );
-
-  const toggleBorough = (id: number) => {
-    if (selectedBorough && selectedBorough.id === id) {
-      selectedBorough = null;
+  const toggleRegion = (id: number) => {
+    if (selectedRegion && selectedRegion.id === id) {
+      selectedRegion = null;
       selectedId = null;
-    } else selectedBorough = getBoroughFromId(id);
-    if (!selectedBorough) selectedId = null;
-    dispatch('selectBorough', selectedBorough);
+    } else selectedRegion = getRegionFromId(id);
+    if (!selectedRegion) selectedId = null;
+    dispatch('selectRegion', selectedRegion);
   };
 
   const watchSelectedNeighborhood = (oldVal: Neighborhood, newVal: Neighborhood) => {
-    if (oldVal) visibility = visibility.set(oldVal.borough, false);
-    if (newVal) visibility = visibility.set(newVal.borough, true);
+    if (!$regions) return;
+    if (oldVal) regionVisibility = regionVisibility.set(oldVal.parent, false);
+    if (newVal) regionVisibility = regionVisibility.set(newVal.parent, true);
   };
 
   // handles watching the selected neighborhood value and retaining its old value
@@ -63,34 +84,48 @@
 
 {#if $isMobile}
   <InfoPanelModal
-    {selectedBorough}
-    {toggleBorough}
+    {selectedRegion}
+    {toggleRegion}
     {maxNeighborhoods}
-    {numActivities}
     bind:selectedId
     bind:modalOpen
   />
 {:else}
   <div class="flex flex-col w-full md:w-1/3 md:gap-2 max-h-1/2 md:h-auto">
-    <div class="flex flex-col md: gap-2 py-2 md:py-4">
-      <p>Top borough: <span class="font-semibold">{topBorough}</span></p>
-      <p>Top neighborhood: <span class="font-semibold">{topNeighborhood || 'n/a'}</span></p>
-    </div>
-    <div
-      class="grid grid-cols-[25px_100px_auto] gap-3 md:mt-2 border-b border-stone-200 text-stone-400"
-    >
-      <p class="col-span-2">Activities</p>
-      <p>Neighborhoods</p>
-    </div>
-    {#each $boroughs as borough}
-      <BoroughHeader {borough} handler={toggleBorough} {maxNeighborhoods} />
-      {#if !$isMobile && visibility.get(borough.id)}
+    {#if !$cityLoaded}
+      <p>Loading...</p>
+    {:else}
+      <div class="flex flex-col md: gap-2 py-2 md:py-4">
+        {#if $regions}
+          <p>Top {$city.secondary || 'region'}: <span class="font-semibold">{topRegion}</span></p>
+        {/if}
+        <p>Top neighborhood: <span class="font-semibold">{topNeighborhood || 'n/a'}</span></p>
+      </div>
+      {#if $regions}
+        <div
+          class="grid grid-cols-[25px_100px_auto] gap-3 md:mt-2 border-b border-stone-200 text-stone-400"
+        >
+          <p class="col-span-2">Activities</p>
+          <p>Neighborhoods</p>
+        </div>
+        {#each $regions as region}
+          <RegionHeader {region} handler={toggleRegion} {maxNeighborhoods} />
+          {#if !$isMobile && regionVisibility.get(region.id)}
+            <NeighborhoodsList
+              neighborhoods={region.neighborhoods}
+              numActivities={region.runs.length}
+              bind:selectedId
+            />
+          {/if}
+        {/each}
+      {:else}
         <NeighborhoodsList
-          neighborhoods={borough.neighborhoods}
-          numActivities={borough.runs.length}
+          {neighborhoods}
+          numActivities={neighborhoods.reduce((total, n) => total + n.runs.length, 0)}
           bind:selectedId
+          showActivities={true}
         />
       {/if}
-    {/each}
+    {/if}
   </div>
 {/if}
