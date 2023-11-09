@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { authURL, getLocalAuth } from '$lib/auth-utils';
+  import { authURL, getLocalAuth } from '$lib/utils/auth';
   import { navigate } from 'svelte-routing/src/history';
 
   export let height: number = 48;

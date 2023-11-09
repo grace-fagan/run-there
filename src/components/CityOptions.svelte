@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cityInfo } from '$lib/city-utils';
+  import { cityInfo } from '$lib/utils/city';
   import { Link } from 'svelte-routing';
 
   const cities = Object.entries(cityInfo);

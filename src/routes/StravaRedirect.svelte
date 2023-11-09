@@ -6,12 +6,12 @@
     scope,
     setLocalAuth,
     updateLocalActivities
-  } from '$lib/auth-utils';
+  } from '$lib/utils/auth';
   import { getBatchActivities } from '$lib/api';
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
   import { activities, athleteId } from '$lib/store';
-  import { cleanActivities } from '$lib/activity-utiils';
+  import { cleanActivities } from '$lib/utils/activity';
   import { writable } from 'svelte/store';
   import type { UserAuth } from '$types/client';
 

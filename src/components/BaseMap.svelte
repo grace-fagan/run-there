@@ -15,7 +15,7 @@
     showFeatureRoutes,
     toggleRoutes,
     unhoverFeature
-  } from '$lib/mapbox-utils';
+  } from '$lib/utils/mapbox';
   import { afterUpdate, onMount } from 'svelte';
   import type { Feature, FeatureCollection } from 'geojson';
   import { Map as MapboxMap, MapMouseEvent } from 'mapbox-gl';
@@ -23,7 +23,7 @@
   import Tag from './Tag.svelte';
   import { city, isMobile } from '$lib/store';
   import type { Region } from '$types/neighborhoods/nyc';
-  import { getMaxValLength } from '$lib/neighborhoods-utils';
+  import { getMaxValLength } from '$lib/utils/neighborhoods';
 
   export let routes: Route[];
   export let data: FeatureCollection;

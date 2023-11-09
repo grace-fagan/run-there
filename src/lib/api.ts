@@ -1,8 +1,18 @@
 import type { StravaSummaryActivity } from '$types/stravaAPI/summary-activity';
 import { type Writable } from 'svelte/store';
-import { getServerUrl, promiseWhile } from './api-utils';
+import { getServerUrl } from './utils/env';
 
 const baseURL = getServerUrl(import.meta.env);
+
+//code taken and modified from Bluebird package and Victor Quinn: https://gist.github.com/victorquinn/8030190
+//see explanation: https://www.victorquinn.com/javascript-promise-while-loop
+const promiseWhile = async (condition: () => boolean, action: () => Promise<void>) => {
+  function loop() {
+    if (condition()) return;
+    return Promise.resolve(action()).then(loop);
+  }
+  return loop();
+};
 
 export const getUserAuth = async (token: string, grantType: string, athleteId?: string) => {
   return fetch(
