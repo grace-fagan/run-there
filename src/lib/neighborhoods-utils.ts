@@ -8,7 +8,6 @@ import type { Region, Neighborhood } from '$types/neighborhoods/nyc';
 import { getPolyline } from './mapbox-utils';
 import { get } from 'svelte/store';
 import { regions } from './store';
-import NYCData from '$data/neighborhoods/nyc.json';
 
 // this function cleans and adds route data to each feature in the raw data collection
 export const loadMapData = (
@@ -38,13 +37,16 @@ export const loadMapData = (
 };
 
 // get client region data from client neighborhood data
-export const loadRegionData = (neighborhoods: Neighborhood[]): Region[] => {
+export const loadRegionData = (
+  data: FeatureCollection,
+  neighborhoods: Neighborhood[]
+): Region[] => {
   console.log('loading region data for: ', neighborhoods);
   const neighborhoodsMap = new Map<number, Neighborhood>(neighborhoods.map((n) => [n.id, n]));
 
   return Array.from(regionMap.values())
     .map((r) => {
-      const ids = NYCData.features
+      const ids = data.features
         .filter((f) => Number(f.properties.parent) === r.id)
         .map((f) => f.properties.index);
       neighborhoods = ids

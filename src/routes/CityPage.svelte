@@ -60,7 +60,7 @@
     featureMap = getFeatureMap(neighborhoodData, routes);
     mapData = loadMapData(neighborhoodData, featureMap);
     neighborhoods = mapData.features.map((f: Feature) => featureToNeighborhood(f));
-    $regions = cityName === 'nyc' ? loadRegionData(neighborhoods) : null;
+    $regions = cityName === 'nyc' ? loadRegionData(neighborhoodData, neighborhoods) : null;
   };
 
   const loadCity = async () => {
