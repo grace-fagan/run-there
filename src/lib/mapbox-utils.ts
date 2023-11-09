@@ -190,11 +190,14 @@ export const hideFeatureRoutes = (map: MapboxMap, n: Feature) => {
 };
 
 export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: Position) => {
-  map.setLayoutProperty('neighborhoods-selected', 'visibility', n ? 'visible' : 'none');
-  map.flyTo({
-    center: n ? getFeatureCenter(n.geometry as Polygon) : center,
-    zoom: n ? 13 : 9.5
-  });
+  const layer = 'neighborhoods-selected';
+  if (map.getLayer(layer)) {
+    map.setLayoutProperty(layer, 'visibility', n ? 'visible' : 'none');
+    map.flyTo({
+      center: n ? getFeatureCenter(n.geometry as Polygon) : center,
+      zoom: n ? 13 : 9.5
+    });
+  }
 };
 
 export const moveToRegion = (map: MapboxMap, r: Region) => {
