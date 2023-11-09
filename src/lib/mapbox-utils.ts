@@ -198,6 +198,7 @@ export const selectNeighborhood = (map: MapboxMap, n: Feature | null, center: Po
 export const moveToRegion = (map: MapboxMap, r: Region | null, center: Position) => {
   map.flyTo({
     center: r ? r.center : center,
-    zoom: r ? 11 : 9.5
+    zoom: r ? 11 : 9.5,
+    maxDuration: 5000
   });
 };
