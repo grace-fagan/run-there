@@ -26,7 +26,7 @@ export const loadMapData = (
         properties: {
           name: feature.properties.neighborhood as string,
           parent,
-          color: getRegion(parent)?.color || '#63BC83',
+          color: getRegion(parent)?.color,
           neighbors: feature.properties.neighbors,
           runs: featureMap.get(id),
           value: featureMap.get(id).length
