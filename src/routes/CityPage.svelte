@@ -123,9 +123,7 @@
         on:selectRegion={(b) => (selectedRegion = b.detail)}
       />
     </div>
-    {#if !$isMobile}
-      <Footer />
-    {/if}
+    <Footer />
   {:else}
     <PageNotFound />
   {/if}

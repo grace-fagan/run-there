@@ -5,7 +5,7 @@
 </script>
 
 <div
-  class="flex flex-col gap-2 md:gap-0 md:flex-row md:justify-between justify-start h-8 md:items-center"
+  class="flex flex-col gap-2 md:gap-0 md:flex-row md:justify-between justify-start md:items-center"
 >
   <RefreshFooter />
   <div class="flex justify-between">

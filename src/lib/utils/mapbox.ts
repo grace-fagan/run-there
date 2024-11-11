@@ -7,6 +7,7 @@ import { getFeatureCenter } from './neighborhoods';
 import type { Region } from '$types/neighborhoods/nyc';
 import { get } from 'svelte/store';
 import { city } from '../store';
+import { ROUTES_COLOR } from '$lib/styles';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -49,7 +50,28 @@ export const addNeighborhoodsToMap = (
       type: 'fill',
       source: NEIGHBORHOODS_SRC,
       paint: {
-        'fill-color': ['get', 'color'],
+        'fill-color': [
+          'case',
+          ['==', maxValue, 0],
+          'rgba(238, 238, 238, 0.2)', // Light green with low opacity if maxValue is 0
+          ['==', ['get', 'value'], 0],
+          'rgba(238, 238, 238, 0)', // Fully transparent for value 0
+          ['>', ['get', 'value'], 0],
+          [
+            'coalesce',
+            ['get', 'color'], // Use the feature's assigned color if it exists
+            [
+              'interpolate',
+              ['exponential', 0.97],
+              ['get', 'value'],
+              1,
+              'rgb(217, 230, 140)', // Light green for minimum value (1)
+              maxValue <= 1 ? 1.1 : maxValue,
+              'rgb(92, 162, 73)' // Dark green for maximum value
+            ]
+          ],
+          'rgba(238, 238, 238, 0.2)' // Default fallback to light green with low opacity
+        ],
         'fill-opacity': [
           'case',
           ['==', maxValue, 0],
@@ -108,7 +130,12 @@ export const addRoutesToMap = (map: MapboxMap, routes: Route[]) => {
       'line-cap': 'round'
     },
     paint: {
-      'line-color': ['case', ['boolean', ['feature-state', 'hover'], false], '#E04051', '#5D5991'],
+      'line-color': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        '#E04051',
+        ROUTES_COLOR
+      ],
       'line-width': 1,
       'line-opacity': ['case', ['boolean', ['feature-state', 'visible'], false], 1, 0]
     }
